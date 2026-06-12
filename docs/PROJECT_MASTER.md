@@ -79,7 +79,7 @@ Produce a project that demonstrates:
 |---|---|---|---|
 | 1 | — | Planning, Dataset Inspection, Documentation | ✅ Completed |
 | 2 | 01_eda.ipynb | Exploratory Data Analysis | ✅ Completed |
-| 3 | 02_preprocessing.ipynb | Data Preprocessing + Feature Engineering | ⬜ Pending |
+| 3 | 02_preprocessing.ipynb | Data Preprocessing + Feature Engineering | ✅ Completed |
 | 4 | 03_baseline_mlp.ipynb | Neural Network Foundations + Baseline MLP | ⬜ Pending |
 | 5 | 04_activation_study.ipynb | Activation Function Deep Dive | ⬜ Pending |
 | 6 | 05_optimizer_study.ipynb | Optimizer Comparison Study | ⬜ Pending |

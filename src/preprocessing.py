@@ -66,7 +66,7 @@ def encode_categorical(df: pd.DataFrame) -> pd.DataFrame:
         df['hour_sin'] = np.sin(2 * np.pi * df['transaction_hour'] / 24.0)
         df['hour_cos'] = np.cos(2 * np.pi * df['transaction_hour'] / 24.0)
         df = df.drop(columns=['transaction_hour'])
-        print("Encoded cyclical time column: 'transaction_hour' -> 'hour_sin', 'hour_cos'")
+        print("Encoded cyclical time column: 'transaction_hour' -> 'hour_sin', 'hour_cos and drop the column transaction_hour'")
         
     # One-hot encode merchant_category if present
     if 'merchant_category' in df.columns:

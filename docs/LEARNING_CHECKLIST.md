@@ -135,7 +135,7 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 | Baseline (no handling) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | Weighted BCE Loss | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | WeightedRandomSampler | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| SMOTE | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| SMOTE | ✅ | ✅ | ⬜ | ✅ | 🔄 |
 
 ---
 
@@ -151,4 +151,4 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 ---
 
-*Last updated: 2026-06-12 | Phase: 2 – Exploratory Data Analysis*
+*Last updated: 2026-06-13 | Phase: 3 – Data Preprocessing + Feature Engineering*

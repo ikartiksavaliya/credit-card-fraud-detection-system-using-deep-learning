@@ -59,7 +59,7 @@
 | **Exploding Gradients** | | | 📖 | | | | 💻 | | | | — | CHECKLIST |
 | **Baseline (no imbalance)** | | | 📊 | | | | | 📖💻📊 | | | — | CHECKLIST |
 | **WeightedRandomSampler** | | | | | | | | 📖💻📊 | | | training.py | CHECKLIST |
-| **SMOTE** | | | | | | | | 📖💻📊 | | | preprocessing.py | CHECKLIST |
+| **SMOTE** | | 📖💻 | | | | | | 📖💻📊 | | | preprocessing.py | CHECKLIST |
 | **Confusion Matrix** | | | 💻📊 | | | | | | | | evaluation.py | CHECKLIST |
 | **Precision/Recall/F1** | | | 💻📊 | | | | | | | | evaluation.py | CHECKLIST |
 | **ROC-AUC** | | | 💻📊 | | | | | | | | evaluation.py | CHECKLIST |
@@ -68,4 +68,4 @@
 
 ---
 
-*Last updated: 2026-06-12 | Phase: 1 – Planning*
+*Last updated: 2026-06-13 | Phase: 3 – Data Preprocessing + Feature Engineering*
