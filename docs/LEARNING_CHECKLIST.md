@@ -17,11 +17,11 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 | Topic | Explained | Implemented | Evaluated | Documented | Status |
 |---|---|---|---|---|---|
-| Neurons | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Layers (Dense/Linear) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Weights & Biases | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Forward Pass | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Predictions & Thresholding | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Neurons | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Layers (Dense/Linear) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Weights & Biases | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Forward Pass | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Predictions & Thresholding | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
@@ -29,9 +29,9 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 | Topic | Explained | Implemented | Evaluated | Documented | Status |
 |---|---|---|---|---|---|
-| Sigmoid | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Sigmoid | ✅ | ✅ | ⬜ | ✅ | 🔄 |
 | Tanh | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| ReLU | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| ReLU | ✅ | ✅ | ⬜ | ✅ | 🔄 |
 | Leaky ReLU | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | ELU | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | GELU | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
@@ -42,7 +42,7 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 | Topic | Explained | Implemented | Evaluated | Documented | Status |
 |---|---|---|---|---|---|
-| Binary Cross Entropy | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Binary Cross Entropy | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Cross Entropy (multi-class) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | Weighted BCE (class imbalance) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 
@@ -52,9 +52,9 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 | Topic | Explained | Implemented | Evaluated | Documented | Status |
 |---|---|---|---|---|---|
-| Computational Graph | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Chain Rule Intuition | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Gradient Flow Analysis | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Computational Graph | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Chain Rule Intuition | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Gradient Flow Analysis | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
@@ -62,9 +62,9 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 | Topic | Explained | Implemented | Evaluated | Documented | Status |
 |---|---|---|---|---|---|
-| Batch Gradient Descent | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Mini-Batch SGD | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Learning Rate Intuition | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Batch Gradient Descent | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Mini-Batch SGD | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Learning Rate Intuition | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Step Decay Scheduler | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | Cosine Decay Scheduler | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | Warmup | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
@@ -80,7 +80,7 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 | Nesterov Momentum | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | Adagrad | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | RMSProp | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Adam | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Adam | ✅ | ✅ | ⬜ | ✅ | 🔄 |
 | AdamW | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 
 ---
@@ -132,7 +132,7 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 | Strategy | Explained | Implemented | Evaluated | Documented | Status |
 |---|---|---|---|---|---|
-| Baseline (no handling) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Baseline (no handling) | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Weighted BCE Loss | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | WeightedRandomSampler | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | SMOTE | ✅ | ✅ | ⬜ | ✅ | 🔄 |
@@ -143,12 +143,12 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 | Metric | Explained | Implemented | Used in Experiments | Status |
 |---|---|---|---|---|
-| Confusion Matrix | ⬜ | ⬜ | ⬜ | ⬜ |
-| Precision / Recall / F1 | ⬜ | ⬜ | ⬜ | ⬜ |
-| ROC-AUC | ⬜ | ⬜ | ⬜ | ⬜ |
-| PR-AUC | ⬜ | ⬜ | ⬜ | ⬜ |
+| Confusion Matrix | ✅ | ✅ | ✅ | ✅ |
+| Precision / Recall / F1 | ✅ | ✅ | ✅ | ✅ |
+| ROC-AUC | ✅ | ✅ | ✅ | ✅ |
+| PR-AUC | ✅ | ✅ | ✅ | ✅ |
 | Threshold Optimization | ⬜ | ⬜ | ⬜ | ⬜ |
 
 ---
 
-*Last updated: 2026-06-13 | Phase: 3 – Data Preprocessing + Feature Engineering*
+*Last updated: 2026-06-13 | Phase: 4 – Baseline MLP*

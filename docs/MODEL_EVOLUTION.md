@@ -27,30 +27,30 @@ Production Model
 
 ## MODEL-v0: Baseline MLP
 
-- **Date:** TBD (Notebook 03)
+- **Date:** 2026-06-13 (Notebook 03)
 - **Architecture:**
-  - Input Layer: 9 features (after encoding)
+  - Input Layer: 13 features (after encoding)
   - Hidden Layer 1: 64 neurons, ReLU
   - Hidden Layer 2: 32 neurons, ReLU
-  - Output Layer: 1 neuron, Sigmoid
+  - Output Layer: 1 neuron, Sigmoid (logits used in training)
 - **Training Config:**
   - Optimizer: Adam (lr=0.001)
-  - Loss: Binary Cross Entropy
-  - Epochs: 50
+  - Loss: Binary Cross Entropy (via BCEWithLogitsLoss)
+  - Epochs: 50 (Early stopped at epoch 25, best weights from epoch 20)
   - Batch Size: 64
 - **Imbalance Handling:** None
 - **Regularization:** None
-- **Expected Weakness:** Will likely predict mostly legitimate (class imbalance), recall will be low
-- **Metrics:** To be filled after training
+- **Expected Weakness:** Susceptible to class imbalance; performance represents a baseline before imbalance handling strategies.
+- **Metrics:** Filled after training
 
 | Metric | Train | Validation | Test |
 |---|---|---|---|
-| Loss | — | — | — |
-| Precision | — | — | — |
-| Recall | — | — | — |
-| F1 | — | — | — |
-| ROC-AUC | — | — | — |
-| PR-AUC | — | — | — |
+| Loss | 0.0080 | 0.0136 | 0.0212 |
+| Precision | 0.9787 | 0.9091 | 0.6957 |
+| Recall | 0.8762 | 0.8696 | 0.6957 |
+| F1 | 0.9246 | 0.8889 | 0.6957 |
+| ROC-AUC | 0.9997 | 0.9973 | 0.9951 |
+| PR-AUC | 0.9853 | 0.9047 | 0.7779 |
 
 ---
 
@@ -117,4 +117,4 @@ Production Model
 
 ---
 
-*Last updated: 2026-06-12 | Phase: 1 – Planning*
+*Last updated: 2026-06-13 | Phase: 4 – Baseline MLP*
