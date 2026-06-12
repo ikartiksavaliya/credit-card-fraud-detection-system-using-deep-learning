@@ -77,8 +77,8 @@ Produce a project that demonstrates:
 
 | Phase | Notebook | Topic | Status |
 |---|---|---|---|
-| 1 | — | Planning, Dataset Inspection, Documentation | 🔄 In Progress |
-| 2 | 01_eda.ipynb | Exploratory Data Analysis | ⬜ Pending |
+| 1 | — | Planning, Dataset Inspection, Documentation | ✅ Completed |
+| 2 | 01_eda.ipynb | Exploratory Data Analysis | ✅ Completed |
 | 3 | 02_preprocessing.ipynb | Data Preprocessing + Feature Engineering | ⬜ Pending |
 | 4 | 03_baseline_mlp.ipynb | Neural Network Foundations + Baseline MLP | ⬜ Pending |
 | 5 | 04_activation_study.ipynb | Activation Function Deep Dive | ⬜ Pending |
