@@ -29,12 +29,12 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 | Topic | Explained | Implemented | Evaluated | Documented | Status |
 |---|---|---|---|---|---|
-| Sigmoid | ✅ | ✅ | ⬜ | ✅ | 🔄 |
-| Tanh | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| ReLU | ✅ | ✅ | ⬜ | ✅ | 🔄 |
-| Leaky ReLU | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| ELU | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| GELU | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Sigmoid | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Tanh | ✅ | ✅ | ✅ | ✅ | ✅ |
+| ReLU | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Leaky ReLU | ✅ | ✅ | ✅ | ✅ | ✅ |
+| ELU | ✅ | ✅ | ✅ | ✅ | ✅ |
+| GELU | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ---
 

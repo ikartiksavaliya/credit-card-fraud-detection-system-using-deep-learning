@@ -25,12 +25,18 @@ An artificial neuron is a mathematical function that models the basic signaling 
 ---
 
 ### Q2: Why do we need non-linear activation functions? What happens if we don't use them?
-*(To be filled after Phase 5)*
 
-**Key points to cover:**
-- Without activation: network collapses to a single linear transformation regardless of depth
-- Proof: composition of linear functions is linear → depth buys nothing
-- Non-linearity = ability to approximate any continuous function (Universal Approximation Theorem)
+If we do not use non-linear activation functions, a neural network collapses mathematically into a single linear transformation, regardless of how many layers it has. 
+
+* **Mathematical Proof:**
+  Let a 2-layer network have inputs $x$, weight matrices $W_1, W_2$, and biases $b_1, b_2$. Without activation functions, the output $y$ is:
+  $$y = W_2(W_1 x + b_1) + b_2$$
+  $$y = (W_2 W_1) x + (W_2 b_1 + b_2)$$
+  If we define a single equivalent weight matrix $W' = W_2 W_1$ and a single bias vector $b' = W_2 b_1 + b_2$, the equation becomes:
+  $$y = W' x + b'$$
+  This is a simple linear function. No matter how deep the network is, the composition of linear functions remains linear. Thus, a multi-layer linear network has no more representational capacity than a single-layer linear model.
+* **Universal Approximation:**
+  Non-linear activation functions allow the network to learn complex, non-linear decision boundaries. According to the **Universal Approximation Theorem**, a feedforward network with a single hidden layer and a non-linear activation function can approximate any continuous function on compact subsets of $\mathbb{R}^n$ to arbitrary precision. Non-linearities are what give neural networks their representation capacity and power.
 
 ---
 
@@ -54,16 +60,47 @@ Backpropagation allows us to calculate the exact analytical gradients for all pa
 ## ⚡ ACTIVATION FUNCTIONS
 
 ### Q4: What is the vanishing gradient problem with Sigmoid/Tanh?
-*(To be filled after Phase 5)*
+
+* **Sigmoid and Tanh Derivatives:**
+  The derivative of the Sigmoid function $\sigma(z)$ is $\sigma'(z) = \sigma(z)(1 - \sigma(z))$, which reaches a maximum value of only $0.25$ (at $z=0$). The derivative of Tanh $g(z)$ is $g'(z) = 1 - \tanh^2(z)$, which has a maximum value of $1.0$ (at $z=0$).
+* **How Gradients Vanish:**
+  During backpropagation, the gradient of the loss with respect to a weight in an early layer is calculated using the chain rule, which multiplies the derivatives of the activation functions of all subsequent layers:
+  $$\frac{\partial L}{\partial W^{[1]}} = \text{error} \times \prod_{i=2}^{L} a'_{i}(z^{[i]}) \times \dots$$
+  Since the derivatives of Sigmoid and Tanh are bounded and typically much less than $1.0$ (especially when inputs $z$ are large positive or negative and the function saturates, i.e., $a' \approx 0$), multiplying many small numbers together across multiple layers causes the gradient to shrink exponentially as it flows backward.
+* **Consequence:**
+  The weights in the earliest layers of the network receive near-zero updates, meaning they learn extremely slowly or stop learning altogether. This limits the practical depth of networks using Sigmoid/Tanh activations.
 
 ### Q5: Why is ReLU preferred over Sigmoid in hidden layers?
-*(To be filled after Phase 5)*
+
+ReLU ($\text{ReLU}(z) = \max(0, z)$) is preferred over Sigmoid in hidden layers for three primary reasons:
+1. **Constant Gradient (No Saturation on Positive Domain):** For any positive input ($z > 0$), the derivative of ReLU is exactly $1.0$. This prevents the gradient from shrinking during backpropagation, effectively solving the vanishing gradient problem for positive inputs and enabling the training of much deeper networks.
+2. **Computational Efficiency:** Sigmoid requires expensive exponential operations ($e^{-z}$) and division, whereas ReLU can be computed extremely fast using a simple thresholding operation at $0$ (which is highly optimized on CPUs/GPUs).
+3. **Representational Sparsity:** ReLU outputs exactly $0.0$ for all negative inputs ($z \le 0$). This results in sparse activations (meaning only a subset of neurons fire for any given input), which reduces computational overhead and helps prevent overfitting.
 
 ### Q6: What is the dying ReLU problem? How do Leaky ReLU and ELU solve it?
-*(To be filled after Phase 5)*
+
+* **The Dying ReLU Problem:**
+  Since ReLU outputs exactly $0.0$ and has a derivative of exactly $0.0$ for any negative input ($z < 0$), if a neuron gets updated such that it receives negative inputs for the entire training dataset, it will output $0.0$ and its gradient will be exactly $0.0$ for all training samples. Consequently, its weights will never update again during backpropagation. The neuron effectively "dies" and becomes permanently inactive, reducing the network's capacity.
+* **Leaky ReLU Solution:**
+  Leaky ReLU introduces a small, non-zero slope ($\alpha$, typically $0.01$) for negative inputs:
+  $$\text{Leaky ReLU}(z) = \max(\alpha z, z)$$
+  This ensures that even when $z < 0$, the gradient is a small non-zero value ($\alpha$), allowing the neuron to continue receiving weight updates and eventually recover.
+* **ELU Solution:**
+  ELU (Exponential Linear Unit) uses an exponential curve for negative inputs:
+  $$\text{ELU}(z) = z \text{ if } z > 0 \text{ else } \alpha(e^z - 1)$$
+  ELU provides a small non-zero gradient for negative inputs to prevent dead neurons, while smoothing the transition around zero. It also pushes the mean activation close to zero, which speeds up convergence.
 
 ### Q7: What is GELU? Why is it used in modern transformers?
-*(To be filled after Phase 5)*
+
+* **Definition of GELU:**
+  GELU (Gaussian Error Linear Unit) scales the input $z$ by its cumulative distribution function (CDF) under a standard normal distribution:
+  $$\text{GELU}(z) = z \cdot \Phi(z) = z \cdot P(X \le z) \text{ where } X \sim \mathcal{N}(0, 1)$$
+* **Why GELU is Used:**
+  Unlike ReLU, which strictly truncates negative inputs at $0$, or Leaky ReLU, which scales them by a fixed constant, GELU weights the input deterministically but probabilistically based on its value.
+  - If the input is very negative, $\Phi(z) \to 0$, making the output near $0$.
+  - If the input is very positive, $\Phi(z) \to 1$, making the output near $z$.
+  - Near zero, GELU provides a smooth, non-monotonic curve that has a small curvature. Because it is smooth and has non-zero derivatives everywhere, it allows gradient flow even for negative inputs.
+  - **In Transformers:** Transformers (e.g., BERT, GPT, ViT) rely heavily on layer normalization and feedforward sub-networks. GELU's smooth gradient flow helps stabilize self-attention optimization, prevents dead zones, and empirically leads to faster training and better generalization performance than ReLU on natural language and vision processing tasks.
 
 ---
 

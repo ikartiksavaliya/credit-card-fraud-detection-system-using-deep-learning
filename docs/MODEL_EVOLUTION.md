@@ -56,11 +56,24 @@ Production Model
 
 ## MODEL-v1: Activation Study Winner
 
-- **Date:** TBD (Notebook 04)
-- **Change:** Replace ReLU with the best-performing activation from study
-- **Hypothesis:** Non-standard activations (GELU/ELU) may perform better on this tabular fraud data
-- **Architecture:** Same as v0 but with best activation
-- **Metrics:** To be filled
+- **Date:** 2026-06-15 (Notebook 04)
+- **Change:** Replace ReLU with the best-performing activation from study (Leaky ReLU)
+- **Hypothesis:** Non-standard/non-saturating activations (like Leaky ReLU, ELU, GELU) prevent the dying ReLU problem and improve gradient flow on tabular data. Leaky ReLU was chosen because it achieved the highest F1-Score (71.11%) and matched the highest recall (69.57%) on the test set while showing stable validation learning behavior.
+- **Architecture:**
+  - Input Layer: 13 features (after encoding)
+  - Hidden Layer 1: 64 neurons, Leaky ReLU (slope = 0.01)
+  - Hidden Layer 2: 32 neurons, Leaky ReLU (slope = 0.01)
+  - Output Layer: 1 neuron, Sigmoid (logits used in training)
+- **Metrics:**
+
+| Metric | Train | Validation | Test |
+|---|---|---|---|
+| Loss | 0.0075 | 0.0133 | 0.0206 |
+| Precision | 0.9894 | 0.8696 | 0.7273 |
+| Recall | 0.8857 | 0.8696 | 0.6957 |
+| F1 | 0.9347 | 0.8696 | 0.7111 |
+| ROC-AUC | 0.9998 | 0.9977 | 0.9954 |
+| PR-AUC | 0.9867 | 0.9090 | 0.7936 |
 
 ---
 
