@@ -12,6 +12,7 @@ Contents:
 - compute_class_weights(): For weighted BCE loss (TBD in Phase 9)
 """
 
+import os
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -23,12 +24,12 @@ class EarlyStopping:
     Monitors validation loss and stops training if it doesn't improve after a patience threshold.
     Saves the best model weights to disk.
     """
-    def __init__(self, patience: int = 5, min_delta: float = 0.0, checkpoint_path: str = "best_model.pt"):
+    def __init__(self, patience: int = 5, min_delta: float = 0.0, checkpoint_path: str = "outputs/models/best_model.pt"):
         """
         Args:
             patience (int): How long to wait after last time validation loss improved. Defaults to 5.
             min_delta (float): Minimum change in monitored quantity to qualify as an improvement. Defaults to 0.0.
-            checkpoint_path (str): Filepath to save the best model weights. Defaults to 'best_model.pt'.
+            checkpoint_path (str): Filepath to save the best model weights. Defaults to 'outputs/models/best_model.pt'.
         """
         self.patience = patience
         self.min_delta = min_delta
@@ -43,6 +44,9 @@ class EarlyStopping:
             self.best_loss = val_loss
             self.counter = 0
             # Save model checkpoint
+            dir_name = os.path.dirname(self.checkpoint_path)
+            if dir_name:
+                os.makedirs(dir_name, exist_ok=True)
             torch.save(model.state_dict(), self.checkpoint_path)
             print(f"  Validation loss decreased to {val_loss:.6f}. Model saved to {self.checkpoint_path}")
         else:
