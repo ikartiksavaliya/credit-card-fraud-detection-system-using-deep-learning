@@ -15,3 +15,4 @@ env/
 # Datasets and model training outputs (to keep git history light)
 data/
 outputs/
+*.pt

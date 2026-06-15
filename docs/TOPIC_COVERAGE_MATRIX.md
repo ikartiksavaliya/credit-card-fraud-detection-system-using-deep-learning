@@ -68,4 +68,4 @@
 
 ---
 
-*Last updated: 2026-06-13 | Phase: 3 – Data Preprocessing + Feature Engineering*
+*Last updated: 2026-06-13 | Phase: 4 – Baseline MLP*
