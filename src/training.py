@@ -68,7 +68,9 @@ class Trainer:
         optimizer: torch.optim.Optimizer,
         device: torch.device,
         scheduler: Any = None,
-        early_stopping: EarlyStopping = None
+        early_stopping: EarlyStopping = None,
+        max_grad_norm: float = None,
+        l1_lambda: float = 0.0
     ):
         """
         Args:
@@ -78,6 +80,8 @@ class Trainer:
             device (torch.device): Device to run training on (cpu or cuda).
             scheduler (Any): Optional learning rate scheduler.
             early_stopping (EarlyStopping): Optional EarlyStopping callback.
+            max_grad_norm (float): Optional maximum gradient norm for clipping. Defaults to None.
+            l1_lambda (float): L1 regularization weight. Defaults to 0.0 (no L1 penalty).
         """
         self.model = model
         self.criterion = criterion
@@ -85,6 +89,8 @@ class Trainer:
         self.device = device
         self.scheduler = scheduler
         self.early_stopping = early_stopping
+        self.max_grad_norm = max_grad_norm
+        self.l1_lambda = l1_lambda
 
     def train_epoch(self, loader: DataLoader) -> float:
         """Runs a single epoch of training using mini-batches."""
@@ -101,8 +107,18 @@ class Trainer:
             logits = self.model(X_batch).squeeze(-1)
             loss = self.criterion(logits, y_batch.float())
             
+            # Add L1 regularization penalty if requested
+            if self.l1_lambda > 0.0:
+                l1_penalty = sum(p.abs().sum() for p in self.model.parameters())
+                loss = loss + self.l1_lambda * l1_penalty
+            
             # Backward pass & step
             loss.backward()
+            
+            # Perform gradient norm clipping if requested
+            if self.max_grad_norm is not None:
+                nn.utils.clip_grad_norm_(self.model.parameters(), self.max_grad_norm)
+                
             self.optimizer.step()
             
             total_loss += loss.item() * X_batch.size(0)
@@ -229,7 +245,7 @@ def get_scheduler(
     elif scheduler_name == "warmup_cosine":
         def lr_lambda(current_epoch):
             if current_epoch < warmup_epochs:
-                return float(current_epoch) / float(max(1, warmup_epochs))
+                return float(current_epoch + 1) / float(max(1, warmup_epochs))
             progress = float(current_epoch - warmup_epochs) / float(max(1, total_epochs - warmup_epochs))
             min_lr_ratio = eta_min / optimizer.defaults['lr'] if optimizer.defaults['lr'] > 0 else 0.0
             return min_lr_ratio + 0.5 * (1.0 - min_lr_ratio) * (1.0 + math.cos(math.pi * progress))

@@ -88,21 +88,25 @@ Each entry follows this template:
 
 ## Regularization Study (Notebook 07)
 
-*To be filled during Phase 8 execution.*
+- **Date:** 2026-06-16
+- **Notebook:** 07_regularization_study.ipynb
+- **Hypothesis:** Adding explicit regularizers (Dropout, Batch Normalization, L1/L2 penalties, Gradient Clipping) will reduce the generalization gap and improve the test F1-Score and Recall compared to early stopping alone.
+- **Config:** MODEL-v3 MLP (Leaky ReLU activations, AdamW optimizer, Warmup Cosine scheduler, Random Uniform weight initialization).
+- **Results:**
 
-| Technique | Train F1 | Val F1 | Overfit Gap | PR-AUC |
-|---|---|---|---|---|
-| No Regularization | — | — | — | — |
-| Dropout (p=0.3) | — | — | — | — |
-| Dropout (p=0.5) | — | — | — | — |
-| BatchNorm | — | — | — | — |
-| L1 (λ=1e-4) | — | — | — | — |
-| L2 (λ=1e-4) | — | — | — | — |
-| Weight Decay | — | — | — | — |
-| Early Stopping | — | — | — | — |
-| Combined Best | — | — | — | — |
+| Technique | Train F1 | Val F1 | Overfit Gap | Test Precision | Test Recall | Test F1-Score | Test ROC-AUC | Test PR-AUC | Convergence |
+|---|---|---|---|---|---|---|---|---|---|
+| No Regularization | 83.17% | 79.07% | +4.10% | 85.00% | 73.91% | 79.07% | 0.9961 | 0.8267 | 50 epochs |
+| Early Stopping Only | 71.11% | 80.00% | -8.89% | 85.00% | 73.91% | 79.07% | 0.9968 | 0.8370 | 23 epochs |
+| Dropout (p=0.3) | 71.59% | 73.17% | -1.58% | 84.21% | 69.57% | 76.19% | 0.9971 | 0.8500 | 29 epochs |
+| Dropout (p=0.5) | 70.52% | 75.00% | -4.48% | 84.21% | 69.57% | 76.19% | 0.9968 | 0.8471 | 32 epochs |
+| Batch Normalization | 22.03% | 16.00% | +6.03% | 100.00% | 17.39% | 29.63% | 0.9949 | 0.8251 | 23 epochs |
+| L1 Regularization (λ=1e-4) | 35.66% | 35.71% | -0.06% | 100.00% | 39.13% | 56.25% | 0.9969 | 0.8600 | 32 epochs |
+| L2 Reg / Weight Decay | 72.73% | 78.05% | -5.32% | 85.00% | 73.91% | 79.07% | 0.9968 | 0.8356 | 23 epochs |
+| Gradient Clipping (5.0) | 71.11% | 80.00% | -8.89% | 85.00% | 73.91% | 79.07% | 0.9968 | 0.8370 | 23 epochs |
+| Combined (Dropout + L2) | 69.71% | 71.79% | -2.08% | 84.21% | 69.57% | 76.19% | 0.9971 | 0.8556 | 28 epochs |
 
-**Winner:** TBD | **Reasoning:** TBD
+**Winner:** Early Stopping Only (MODEL-v3 configuration) | **Reasoning:** Early Stopping remains the single most effective regularizer on this dataset. It prevents the model from overfitting to training noise, keeping the overfit gap negative (**-8.89%**), while maximizing test F1-Score (**79.07%**) and test Recall (**73.91%**) with a competitive PR-AUC of **0.8370** in just **23 epochs**. Explicit regularizers like Dropout and L1 penalty caused underfitting due to the small capacity of our MLP, while Batch Normalization crashed model performance by introducing batch-level noise on this highly imbalanced dataset.
 
 ---
 
@@ -121,4 +125,4 @@ Each entry follows this template:
 
 ---
 
-*Last updated: 2026-06-16 | Phase: 7 – Weight Initialization Study*
+*Last updated: 2026-06-16 | Phase: 8 – Regularization Techniques*
