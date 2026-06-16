@@ -99,8 +99,8 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 | Topic | Explained | Implemented | Evaluated | Documented | Status |
 |---|---|---|---|---|---|
-| Batch Normalization | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Gradient Clipping | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Batch Normalization | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Gradient Clipping | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
@@ -108,11 +108,11 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 | Topic | Explained | Implemented | Evaluated | Documented | Status |
 |---|---|---|---|---|---|
-| Dropout | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| L1 Regularization | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| L2 Regularization | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Weight Decay | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Early Stopping | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Dropout | ✅ | ✅ | ✅ | ✅ | ✅ |
+| L1 Regularization | ✅ | ✅ | ✅ | ✅ | ✅ |
+| L2 Regularization | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Weight Decay | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Early Stopping | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
@@ -120,11 +120,11 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 | Topic | Explained | Implemented | Evaluated | Documented | Status |
 |---|---|---|---|---|---|
-| Overfitting | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Underfitting | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Model Capacity (Depth vs Width) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Vanishing Gradients | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Exploding Gradients | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Overfitting | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Underfitting | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Model Capacity (Depth vs Width) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Vanishing Gradients | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Exploding Gradients | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
@@ -151,4 +151,4 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 ---
 
-*Last updated: 2026-06-16 | Phase: 7 – Weight Initialization Study*
+*Last updated: 2026-06-16 | Phase: 8 – Regularization Techniques*

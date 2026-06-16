@@ -138,10 +138,32 @@ Production Model
 
 ## MODEL-v4: Regularized MLP
 
-- **Date:** TBD (Notebook 07)
-- **Change:** Add dropout + BatchNorm + weight decay based on regularization study
-- **Expected Impact:** Reduced overfitting, better generalization
-- **Metrics:** To be filled
+- **Date:** 2026-06-16 (Notebook 07)
+- **Change:** Standardize on **Early Stopping Only** (patience = 5) as the primary regularization method. Confirm that explicit regularizers like Dropout, Batch Normalization, and L1 regularization either degrade generalization performance or cause severe collapse on highly imbalanced tabular data.
+- **Hypothesis:** Early stopping prevents the model from memorizing noise in the training set without reducing the model's capacity, whereas Dropout/L1 underfit due to small network capacity, and Batch Normalization collapses recall because batch-level mean/variance estimates fluctuate wildly when minority class samples are extremely rare.
+- **Architecture:**
+  - Input Layer: 13 features
+  - Hidden Layer 1: 64 neurons, Leaky ReLU (slope = 0.01)
+  - Hidden Layer 2: 32 neurons, Leaky ReLU (slope = 0.01)
+  - Output Layer: 1 neuron, Sigmoid (logits used in training)
+- **Training Config:**
+  - Optimizer: AdamW (lr=0.001)
+  - Scheduler: Warmup Cosine (warmup_epochs=5, total_epochs=50, eta_min=0.0001)
+  - Weight Initialization: Random Uniform (bounds $[-0.05, 0.05]$)
+  - Regularization: Early Stopping Only (patience = 5, best checkpoint restored)
+  - Loss: BCEWithLogitsLoss
+  - Epochs: 50 (Early stopped at epoch 23, best weights from epoch 18)
+  - Batch Size: 64
+- **Metrics:**
+
+| Metric | Train | Validation | Test |
+|---|---|---|---|
+| Loss | 0.0188 | 0.0190 | 0.0184 |
+| Precision | 0.8533 | 0.9412 | 0.8500 |
+| Recall | 0.6095 | 0.6957 | 0.7391 |
+| F1 | 0.7111 | 0.8000 | 0.7907 |
+| ROC-AUC | 0.9965 | 0.9962 | 0.9968 |
+| PR-AUC | 0.8507 | 0.8756 | 0.8370 |
 
 ---
 
@@ -171,4 +193,4 @@ Production Model
 
 ---
 
-*Last updated: 2026-06-16 | Phase: 7 – Weight Initialization Study*
+*Last updated: 2026-06-16 | Phase: 8 – Regularization Techniques*

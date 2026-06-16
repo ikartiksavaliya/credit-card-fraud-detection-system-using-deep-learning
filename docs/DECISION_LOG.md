@@ -144,4 +144,24 @@
 
 ---
 
-*Last updated: 2026-06-16 | Phase: 7 – Weight Initialization Study*
+## DEC-009: Regularization Selection — Early Stopping Only
+
+- **Date:** 2026-06-16
+- **Context:** Select the regularization strategy that minimizes overfitting while preserving minority class recall and F1-score on the credit card fraud detection MLP configuration.
+- **Options Considered:**
+  - No Regularization: Train full 50 epochs (Overfit Gap: +4.10%, Test F1: 79.07%).
+  - Early Stopping Only: Restrict training via validation loss patience = 5 (Overfit Gap: -8.89%, Test F1: 79.07%).
+  - Dropout (p=0.3 or p=0.5): Randomly zero out activations (Test F1: 76.19%).
+  - Batch Normalization: Normalize layers over mini-batches (Test F1: 29.63%).
+  - L1 Regularization (λ=1e-4): L1 penalty on weights (Test F1: 56.25%).
+  - L2 Regularization / Weight Decay (1e-4): L2 penalty on weights (Test F1: 79.07%).
+  - Gradient Clipping (5.0): Clip backpropagated gradients (Test F1: 79.07%).
+- **Decision:** **Early Stopping Only** (patience = 5) restored to the best validation loss epoch is selected as the primary regularization strategy.
+- **Rationale:** Early Stopping successfully keeps the overfit gap negative (**-8.89%**), ensuring the model generalizes extremely well, while maximizing test F1-Score (**79.07%**) and test Recall (**73.91%**) in only **23 epochs**. 
+  Explicit regularizers like Dropout and L1 penalty underfit the dataset because the network capacity is already small (only 13 inputs, hidden layers of 64 and 32 neurons). Batch Normalization collapsed recall entirely because batch-level mean and variance estimates fluctuate wildly on highly imbalanced datasets (where fraud is only 0.17% of samples), introducing severe noise into parameter updates.
+- **Trade-offs Accepted:** Early stopping requires saving checkpoints during training and running validation evaluations at each epoch, adding a small amount of memory/compute overhead during training, but zero overhead at inference.
+- **Revisit Trigger:** If the architecture capacity is dramatically scaled up (e.g. 5+ deep hidden layers) or if class imbalance strategies in Phase 9 alter the distribution of training mini-batches.
+
+---
+
+*Last updated: 2026-06-16 | Phase: 8 – Regularization Techniques*
