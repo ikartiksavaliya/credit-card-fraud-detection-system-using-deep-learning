@@ -13,11 +13,13 @@ Contents:
 """
 
 import os
+import math
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 import pandas as pd
 from typing import Dict, List, Any
+from torch.optim.lr_scheduler import StepLR, CosineAnnealingLR, LambdaLR
 
 class EarlyStopping:
     """
@@ -161,16 +163,20 @@ def get_optimizer(
     model: nn.Module,
     opt_name: str = "adam",
     lr: float = 0.001,
-    weight_decay: float = 0.0
+    weight_decay: float = 0.0,
+    momentum: float = 0.9,
+    nesterov: bool = False
 ) -> torch.optim.Optimizer:
     """
     Factory function for PyTorch optimizers.
     
     Args:
         model (nn.Module): The model containing parameters to optimize.
-        opt_name (str): Name of the optimizer ('adam', 'sgd', 'rmsprop', 'adamw'). Defaults to 'adam'.
+        opt_name (str): Name of the optimizer ('adam', 'sgd', 'rmsprop', 'adamw', 'adagrad'). Defaults to 'adam'.
         lr (float): Learning rate. Defaults to 0.001.
         weight_decay (float): L2 regularization factor. Defaults to 0.0.
+        momentum (float): Momentum factor for SGD and RMSprop. Defaults to 0.9.
+        nesterov (bool): Enables Nesterov momentum for SGD. Defaults to False.
         
     Returns:
         torch.optim.Optimizer: Configured optimizer.
@@ -179,13 +185,57 @@ def get_optimizer(
     if opt_name == "adam":
         return torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
     elif opt_name == "sgd":
-        return torch.optim.SGD(model.parameters(), lr=lr, momentum=0.9, weight_decay=weight_decay)
+        return torch.optim.SGD(model.parameters(), lr=lr, momentum=momentum, nesterov=nesterov, weight_decay=weight_decay)
     elif opt_name == "rmsprop":
-        return torch.optim.RMSprop(model.parameters(), lr=lr, weight_decay=weight_decay)
+        return torch.optim.RMSprop(model.parameters(), lr=lr, momentum=momentum, weight_decay=weight_decay)
     elif opt_name == "adamw":
         return torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
+    elif opt_name == "adagrad":
+        return torch.optim.Adagrad(model.parameters(), lr=lr, weight_decay=weight_decay)
     else:
         raise ValueError(f"Unknown optimizer: {opt_name}")
+
+def get_scheduler(
+    optimizer: torch.optim.Optimizer,
+    scheduler_name: str = "step",
+    step_size: int = 10,
+    gamma: float = 0.1,
+    T_max: int = 50,
+    eta_min: float = 0.0,
+    warmup_epochs: int = 5,
+    total_epochs: int = 50
+):
+    """
+    Factory function for PyTorch learning rate schedulers.
+    
+    Args:
+        optimizer (Optimizer): The optimizer for which to schedule the learning rate.
+        scheduler_name (str): Name of the scheduler ('step', 'cosine', 'warmup_cosine').
+        step_size (int): Period of learning rate decay for StepLR. Defaults to 10.
+        gamma (float): Multiplicative factor of learning rate decay. Defaults to 0.1.
+        T_max (int): Maximum number of iterations for CosineAnnealingLR. Defaults to 50.
+        eta_min (float): Minimum learning rate for CosineAnnealingLR. Defaults to 0.0.
+        warmup_epochs (int): Number of warmup epochs for warmup_cosine. Defaults to 5.
+        total_epochs (int): Total training epochs for warmup_cosine. Defaults to 50.
+        
+    Returns:
+        lr_scheduler: Configured PyTorch scheduler.
+    """
+    scheduler_name = scheduler_name.lower()
+    if scheduler_name == "step":
+        return StepLR(optimizer, step_size=step_size, gamma=gamma)
+    elif scheduler_name == "cosine":
+        return CosineAnnealingLR(optimizer, T_max=T_max, eta_min=eta_min)
+    elif scheduler_name == "warmup_cosine":
+        def lr_lambda(current_epoch):
+            if current_epoch < warmup_epochs:
+                return float(current_epoch) / float(max(1, warmup_epochs))
+            progress = float(current_epoch - warmup_epochs) / float(max(1, total_epochs - warmup_epochs))
+            min_lr_ratio = eta_min / optimizer.defaults['lr'] if optimizer.defaults['lr'] > 0 else 0.0
+            return min_lr_ratio + 0.5 * (1.0 - min_lr_ratio) * (1.0 + math.cos(math.pi * progress))
+        return LambdaLR(optimizer, lr_lambda)
+    else:
+        raise ValueError(f"Unknown scheduler: {scheduler_name}")
 
 def compute_class_weights(y: pd.Series) -> float:
     """

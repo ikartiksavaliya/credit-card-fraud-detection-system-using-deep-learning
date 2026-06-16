@@ -65,9 +65,9 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 | Batch Gradient Descent | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Mini-Batch SGD | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Learning Rate Intuition | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Step Decay Scheduler | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Cosine Decay Scheduler | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Warmup | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Step Decay Scheduler | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Cosine Decay Scheduler | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Warmup | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
@@ -75,13 +75,13 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 | Topic | Explained | Implemented | Evaluated | Documented | Status |
 |---|---|---|---|---|---|
-| SGD (Vanilla) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Momentum | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Nesterov Momentum | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Adagrad | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| RMSProp | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Adam | ✅ | ✅ | ⬜ | ✅ | 🔄 |
-| AdamW | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| SGD (Vanilla) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Momentum | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Nesterov Momentum | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Adagrad | ✅ | ✅ | ✅ | ✅ | ✅ |
+| RMSProp | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Adam | ✅ | ✅ | ✅ | ✅ | ✅ |
+| AdamW | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
@@ -151,4 +151,4 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 ---
 
-*Last updated: 2026-06-13 | Phase: 4 – Baseline MLP*
+*Last updated: 2026-06-16 | Phase: 6 – Optimizer Study*

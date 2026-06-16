@@ -68,4 +68,4 @@
 
 ---
 
-*Last updated: 2026-06-13 | Phase: 4 – Baseline MLP*
+*Last updated: 2026-06-16 | Phase: 6 – Optimizer Study*
