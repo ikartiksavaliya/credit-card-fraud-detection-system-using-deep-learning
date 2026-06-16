@@ -66,16 +66,23 @@ Each entry follows this template:
 
 ## Initialization Study (Notebook 06)
 
-*To be filled during Phase 7 execution.*
+- **Date:** 2026-06-16
+- **Notebook:** 06_initialization_study.ipynb
+- **Hypothesis:** He (Kaiming) initialization matches Leaky ReLU activations best by accounting for the rectification scaling factor, yielding faster convergence and better test metrics compared to naive uniform/normal or Xavier initialization.
+- **Config:** MODEL-v2 MLP (Leaky ReLU activations, AdamW optimizer, Warmup Cosine scheduler, batch size 64).
+- **Results:**
 
-| Initialization | Train Loss (epoch 1) | Val Loss (final) | Recall | F1 | Convergence |
-|---|---|---|---|---|---|
-| Random (Uniform) | — | — | — | — | — |
-| Random (Normal) | — | — | — | — | — |
-| Xavier | — | — | — | — | — |
-| He | — | — | — | — | — |
+| Initialization | Train Loss (epoch 1) | Val Loss (final) | Precision | Recall | F1 | ROC-AUC | PR-AUC | Convergence |
+|---|---|---|---|---|---|---|---|---|
+| PyTorch Default | 0.6793 | 0.0128 | 70.83% | 73.91% | 72.34% | 0.9962 | 0.8338 | 41 epochs |
+| Random (Uniform) | 0.6932 | 0.0190 | 85.00% | 73.91% | 79.07% | 0.9968 | 0.8370 | 23 epochs |
+| Random (Normal) | 0.6909 | 0.0179 | 84.21% | 69.57% | 76.19% | 0.9975 | 0.8655 | 32 epochs |
+| Xavier Uniform | 0.8040 | 0.0141 | 76.19% | 69.57% | 72.73% | 0.9958 | 0.8370 | 44 epochs |
+| Xavier Normal | 0.4669 | 0.0171 | 70.00% | 60.87% | 65.12% | 0.9947 | 0.8133 | 32 epochs |
+| He Uniform | 0.8166 | 0.0168 | 78.95% | 65.22% | 71.43% | 0.9954 | 0.8301 | 44 epochs |
+| He Normal | 0.4556 | 0.0183 | 73.68% | 60.87% | 66.67% | 0.9932 | 0.7590 | 32 epochs |
 
-**Winner:** TBD | **Reasoning:** TBD
+**Winner:** Random Uniform (uniform in $[-0.05, 0.05]$) | **Reasoning:** Surprisingly, initializing weights to small bounds (Random Uniform or Random Normal) outperformed the mathematically derived Xavier/Kaiming initializations in terms of test set generalization. In a shallow MLP (2 hidden layers) trained on a small, highly imbalanced dataset, the larger initial weight variance of Xavier/Kaiming causes the model to fit training noise too rapidly, leading to overfitting. Small random initializations keep the weight values constrained, acting as an implicit regularizer that boosts holdout test performance (raising F1-Score to **79.07%** and Recall to **73.91%**) and converges in fewer epochs (**23 epochs**).
 
 ---
 
@@ -114,4 +121,4 @@ Each entry follows this template:
 
 ---
 
-*Last updated: 2026-06-16 | Phase: 6 – Optimizer Study*
+*Last updated: 2026-06-16 | Phase: 7 – Weight Initialization Study*

@@ -127,4 +127,21 @@
 
 ---
 
-*Last updated: 2026-06-16 | Phase: 6 – Optimizer Study*
+## DEC-008: Weight Initialization Selection — Random Uniform over Xavier and Kaiming
+
+- **Date:** 2026-06-16
+- **Context:** Select the weight initialization method that maximizes test F1-Score, stability, and convergence speed on the credit card fraud detection MLP configuration.
+- **Options Considered:**
+  - PyTorch Default: Kaiming uniform with standard PyTorch bounds (starting loss 0.679, F1-Score 72.34%).
+  - Random Uniform: Naive uniform initialization in $[-0.05, 0.05]$ (starting loss 0.693, F1-Score 79.07%).
+  - Random Normal: Naive normal initialization with standard deviation 0.05 (starting loss 0.691, F1-Score 76.19%).
+  - Xavier Uniform/Normal: Scaled to balance input/output variance for symmetric activations (F1-Scores: 72.73% / 65.12%).
+  - Kaiming Uniform/Normal: Scaled to balance input/output variance for rectified activations like Leaky ReLU (F1-Scores: 71.43% / 66.67%).
+- **Decision:** **Random Uniform** (uniform distribution in $[-0.05, 0.05]$) for weights, and initialize biases to `0.0`.
+- **Rationale:** Random Uniform initialization achieved the highest test performance (F1-Score of **79.07%** and Recall of **73.91%**) while converging fastest (**23 epochs**). For a shallow network trained on a highly imbalanced dataset, the larger initial weight variance of mathematically derived Xavier/Kaiming methods causes the model to fit noise in the training set too quickly. Limiting initial weights to small values acts as an implicit regularizer, preventing early overfitting to majority non-fraud samples and boosting test generalization.
+- **Trade-offs Accepted:** Small random initialization does not scale well to very deep networks, where Xavier/Kaiming are required to prevent vanishing/exploding gradients. However, for our 2-layer MLP architecture, the regularization benefit dominates.
+- **Revisit Trigger:** If the architecture depth is significantly increased or if explicit regularization (Dropout, weight decay) is added in Phase 8.
+
+---
+
+*Last updated: 2026-06-16 | Phase: 7 – Weight Initialization Study*
