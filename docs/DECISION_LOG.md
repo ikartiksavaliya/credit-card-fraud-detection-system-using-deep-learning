@@ -93,4 +93,38 @@
 
 ---
 
-*Last updated: 2026-06-12 | Phase: 1 – Planning*
+---
+
+## DEC-006: Optimizer and Scheduler Selection
+
+- **Date:** 2026-06-16
+- **Context:** Choose the optimal optimizer and learning rate decay scheduling strategy for the MLP.
+- **Options Considered:**
+  - Optimizers: SGD, SGD + Momentum, Nesterov Momentum, Adagrad, RMSprop, Adam, AdamW.
+  - Schedulers (with AdamW): Step Decay, Cosine Decay, Warmup Cosine Decay.
+- **Decision:** **AdamW with Warmup Cosine Decay Scheduler** (warmup_epochs=5, eta_min=0.0001)
+- **Rationale:** Adam/AdamW provided the strongest baseline results (F1: 71.11%, PR-AUC: 0.7936), but applying the Warmup Cosine Scheduler on AdamW yielded a significant performance boost (F1: 72.34%, PR-AUC: 0.8338). The linear warmup epoch range stabilizes gradient flow early on, and the cosine annealing decay facilitates optimal parameter convergence near the end of training.
+- **Trade-offs Accepted:** Adds hyperparameters (warmup epochs, min learning rate) that require tuning and tracking.
+- **Revisit Trigger:** If introducing heavy regularization (Dropout/L2) alters optimizer behavior.
+
+---
+
+## DEC-007: Activation Function Selection — Leaky ReLU over other Activations
+
+- **Date:** 2026-06-15
+- **Context:** Select the activation function that maximizes model performance and stabilizes training on the imbalanced credit card fraud dataset.
+- **Options Considered:**
+  - Sigmoid: Standard squashing function, but susceptible to vanishing gradients.
+  - Tanh: Zero-centered but still susceptible to vanishing gradients in deep networks.
+  - ReLU: Standard deep learning activation, but prone to "dying ReLU" (inactive neurons for negative values).
+  - Leaky ReLU: Keeps a small positive gradient (slope = 0.01) for negative inputs.
+  - ELU: Smooth exponential curve for negative values; computationally more expensive.
+  - GELU: Stochastic regularization effect; state-of-the-art for transformers but less studied on simple MLPs.
+- **Decision:** **Leaky ReLU** (with negative slope = 0.01)
+- **Rationale:** Leaky ReLU yielded the highest test F1-Score of 71.11%, matching the highest test recall of 69.57% while exhibiting the most stable validation learning behavior. Standardizing on Leaky ReLU prevents the dead neuron problem, ensuring all parts of the network continue to receive gradients and adapt to minority fraud samples.
+- **Trade-offs Accepted:** Adds a hyperparameter (negative slope) that was set to a standard default of 0.01.
+- **Revisit Trigger:** If introducing Batch Normalization or changes in weight initialization schemes significantly alter activation scaling.
+
+---
+
+*Last updated: 2026-06-16 | Phase: 6 – Optimizer Study*

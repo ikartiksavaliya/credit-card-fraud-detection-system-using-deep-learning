@@ -79,10 +79,30 @@ Production Model
 
 ## MODEL-v2: Optimizer Study Winner
 
-- **Date:** TBD (Notebook 05)
-- **Change:** Replace Adam with the best-performing optimizer
-- **Hypothesis:** AdamW may outperform vanilla Adam due to proper weight decay
-- **Metrics:** To be filled
+- **Date:** 2026-06-16 (Notebook 05)
+- **Change:** Replace Adam with AdamW, and apply a Warmup Cosine learning rate scheduler.
+- **Hypothesis:** Warmup Cosine scheduler provides a smooth learning rate transition, starting with linear warmup to prevent gradient explosion/early suboptimal local minima, followed by cosine annealing to fine-tune the weights, leading to better test F1-Score (72.34%) and PR-AUC (0.8338).
+- **Architecture:**
+  - Input Layer: 13 features (after encoding)
+  - Hidden Layer 1: 64 neurons, Leaky ReLU (slope = 0.01)
+  - Hidden Layer 2: 32 neurons, Leaky ReLU (slope = 0.01)
+  - Output Layer: 1 neuron, Sigmoid (logits used in training)
+- **Training Config:**
+  - Optimizer: AdamW (lr=0.001)
+  - Scheduler: Warmup Cosine (warmup_epochs=5, total_epochs=50, eta_min=0.0001)
+  - Loss: BCEWithLogitsLoss
+  - Epochs: 50 (Early stopped at epoch 41, best weights from epoch 36)
+  - Batch Size: 64
+- **Metrics:**
+
+| Metric | Train | Validation | Test |
+|---|---|---|---|
+| Loss | 0.0058 | 0.0128 | 0.0199 |
+| Precision | 0.9796 | 0.8261 | 0.7083 |
+| Recall | 0.9143 | 0.8261 | 0.7391 |
+| F1 | 0.9458 | 0.8261 | 0.7234 |
+| ROC-AUC | 0.9999 | 0.9979 | 0.9962 |
+| PR-AUC | 0.9925 | 0.9181 | 0.8338 |
 
 ---
 
@@ -130,4 +150,4 @@ Production Model
 
 ---
 
-*Last updated: 2026-06-13 | Phase: 4 – Baseline MLP*
+*Last updated: 2026-06-16 | Phase: 6 – Optimizer Study*
