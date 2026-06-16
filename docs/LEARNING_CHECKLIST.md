@@ -89,9 +89,9 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 | Topic | Explained | Implemented | Evaluated | Documented | Status |
 |---|---|---|---|---|---|
-| Random (Uniform/Normal) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Xavier / Glorot | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| He / Kaiming | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Random (Uniform/Normal) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Xavier / Glorot | ✅ | ✅ | ✅ | ✅ | ✅ |
+| He / Kaiming | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
@@ -151,4 +151,4 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 ---
 
-*Last updated: 2026-06-16 | Phase: 6 – Optimizer Study*
+*Last updated: 2026-06-16 | Phase: 7 – Weight Initialization Study*

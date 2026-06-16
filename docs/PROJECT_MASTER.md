@@ -82,8 +82,8 @@ Produce a project that demonstrates:
 | 3 | 02_preprocessing.ipynb | Data Preprocessing + Feature Engineering | ✅ Completed |
 | 4 | 03_baseline_mlp.ipynb | Neural Network Foundations + Baseline MLP | ✅ Completed |
 | 5 | 04_activation_study.ipynb | Activation Function Deep Dive | ✅ Completed |
-| 6 | 05_optimizer_study.ipynb | Optimizer Comparison Study | ⬜ Pending |
-| 7 | 06_initialization_study.ipynb | Weight Initialization Study | ⬜ Pending |
+| 6 | 05_optimizer_study.ipynb | Optimizer Comparison Study | ✅ Completed |
+| 7 | 06_initialization_study.ipynb | Weight Initialization Study | ✅ Completed |
 | 8 | 07_regularization_study.ipynb | Regularization Techniques | ⬜ Pending |
 | 9 | 08_class_imbalance_study.ipynb | Class Imbalance Strategies | ⬜ Pending |
 | 10 | 09_advanced_model.ipynb | Advanced Architecture | ⬜ Pending |

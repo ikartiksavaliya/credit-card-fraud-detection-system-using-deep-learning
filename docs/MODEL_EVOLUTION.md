@@ -108,10 +108,31 @@ Production Model
 
 ## MODEL-v3: Initialization Study Winner
 
-- **Date:** TBD (Notebook 06)
-- **Change:** Apply best weight initialization scheme
-- **Hypothesis:** He initialization works best with ReLU-family activations
-- **Metrics:** To be filled
+- **Date:** 2026-06-16 (Notebook 06)
+- **Change:** Apply Random Uniform weight initialization (uniform in $[-0.05, 0.05]$) for all linear weights, and initialize biases to `0.0`.
+- **Hypothesis:** For a shallow MLP on a small, highly imbalanced dataset, naive small-weight initializations act as an implicit regularizer. By limiting initial weight magnitudes, they prevent the model from overfitting early to training noise, leading to better test-set generalization than Xavier or Kaiming methods.
+- **Architecture:**
+  - Input Layer: 13 features
+  - Hidden Layer 1: 64 neurons, Leaky ReLU (slope = 0.01)
+  - Hidden Layer 2: 32 neurons, Leaky ReLU (slope = 0.01)
+  - Output Layer: 1 neuron, Sigmoid (logits used in training)
+- **Training Config:**
+  - Optimizer: AdamW (lr=0.001)
+  - Scheduler: Warmup Cosine (warmup_epochs=5, total_epochs=50, eta_min=0.0001)
+  - Weight Initialization: Random Uniform (bounds $[-0.05, 0.05]$)
+  - Loss: BCEWithLogitsLoss
+  - Epochs: 50 (Early stopped at epoch 23, best weights from epoch 18)
+  - Batch Size: 64
+- **Metrics:**
+
+| Metric | Train | Validation | Test |
+|---|---|---|---|
+| Loss | 0.0188 | 0.0190 | 0.0184 |
+| Precision | 0.8533 | 0.9412 | 0.8500 |
+| Recall | 0.6095 | 0.6957 | 0.7391 |
+| F1 | 0.7111 | 0.8000 | 0.7907 |
+| ROC-AUC | 0.9965 | 0.9962 | 0.9968 |
+| PR-AUC | 0.8507 | 0.8756 | 0.8370 |
 
 ---
 
@@ -150,4 +171,4 @@ Production Model
 
 ---
 
-*Last updated: 2026-06-16 | Phase: 6 – Optimizer Study*
+*Last updated: 2026-06-16 | Phase: 7 – Weight Initialization Study*

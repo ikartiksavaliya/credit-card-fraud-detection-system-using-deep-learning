@@ -28,7 +28,8 @@ class MLP(nn.Module):
         hidden_dims: List[int],
         activation: str = "relu",
         dropout_rate: float = 0.0,
-        use_batch_norm: bool = False
+        use_batch_norm: bool = False,
+        weight_init: str = "default"
     ):
         """
         Args:
@@ -37,6 +38,7 @@ class MLP(nn.Module):
             activation (str): Activation function name ('relu', 'sigmoid', 'tanh', 'leaky_relu', 'elu', 'gelu').
             dropout_rate (float): Dropout probability. Defaults to 0.0 (no dropout).
             use_batch_norm (bool): Whether to apply Batch Normalization after linear layers. Defaults to False.
+            weight_init (str): Weight initialization name ('default', 'uniform', 'normal', 'xavier', 'xavier_normal', 'kaiming', 'kaiming_normal').
         """
         super().__init__()
         
@@ -78,6 +80,56 @@ class MLP(nn.Module):
         layers.append(nn.Linear(prev_dim, 1))
         
         self.network = nn.Sequential(*layers)
+        
+        # Apply custom weight initialization
+        self._initialize_weights(weight_init, activation)
+        
+    def _initialize_weights(self, init_type: str, activation_name: str) -> None:
+        """
+        Applies various weight initialization schemes to the linear layers of the network.
+        """
+        init_type = init_type.lower()
+        if init_type == "default":
+            # PyTorch's default initialization (kaiming_uniform_ with a=sqrt(5) for Linear)
+            return
+            
+        # Determine nonlinearity name and slope a for PyTorch init functions
+        nonlinearity = activation_name.lower()
+        if nonlinearity == "relu":
+            py_nonlinearity = "relu"
+            a = 0.0
+        elif nonlinearity == "leaky_relu":
+            py_nonlinearity = "leaky_relu"
+            a = 0.01  # Default slope for Leaky ReLU in PyTorch
+        elif nonlinearity in ["sigmoid", "tanh"]:
+            py_nonlinearity = nonlinearity
+            a = 0.0
+        else:
+            # Fallback for ELU/GELU to relu to compute gain
+            py_nonlinearity = "relu"
+            a = 0.0
+            
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                # Weight initialization
+                if init_type in ["uniform", "random_uniform"]:
+                    nn.init.uniform_(m.weight, a=-0.05, b=0.05)
+                elif init_type in ["normal", "random_normal"]:
+                    nn.init.normal_(m.weight, mean=0.0, std=0.05)
+                elif init_type in ["xavier", "xavier_uniform"]:
+                    nn.init.xavier_uniform_(m.weight, gain=nn.init.calculate_gain(py_nonlinearity, a))
+                elif init_type == "xavier_normal":
+                    nn.init.xavier_normal_(m.weight, gain=nn.init.calculate_gain(py_nonlinearity, a))
+                elif init_type in ["he", "kaiming", "kaiming_uniform"]:
+                    nn.init.kaiming_uniform_(m.weight, a=a, nonlinearity=py_nonlinearity)
+                elif init_type in ["he_normal", "kaiming_normal"]:
+                    nn.init.kaiming_normal_(m.weight, a=a, nonlinearity=py_nonlinearity)
+                else:
+                    raise ValueError(f"Unknown weight initialization type: {init_type}")
+                
+                # Bias initialization (standard practice is setting to zero)
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0.0)
         
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
