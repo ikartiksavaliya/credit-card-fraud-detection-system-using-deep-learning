@@ -230,11 +230,26 @@ In credit card fraud detection:
 The business optimal threshold must be optimized to balance this trade-off based on the financial and operational costs of False Positives vs False Negatives.
 
 ### Q25: What is threshold optimization? How would you choose the optimal classification threshold?
-*(To be filled after Phase 11)*
+
+**Threshold Optimization** is the process of selecting the probability decision boundary ($T$) that determines whether a model’s continuous probability output is converted into a positive ($1$) or negative ($0$) class prediction, specifically tailored to align with business costs and objectives. By default, classifiers use $T = 0.50$, but this is rarely optimal when the costs of errors are asymmetric.
+
+#### Choosing the Optimal Threshold:
+1. **Define a Business Utility/Cost Function:** 
+   Identify the direct financial and operational costs associated with each error type:
+   - $C_{FN}$ = Cost of a False Negative (e.g. lost transaction + chargeback fee + ops overhead = \$200).
+   - $C_{FP}$ = Cost of a False Positive (e.g. customer friction + support call volume = \$10).
+2. **Perform a Threshold Sweep on Validation Data:**
+   Evaluate the model’s predictions on validation set probabilities across a range of thresholds ($0.0 \leq T \leq 1.0$) in steps of $0.001$, and calculate the total business cost:
+   $$\text{Total Cost} = (\text{FN\_count} \times C_{FN}) + (\text{FP\_count} \times C_{FP})$$
+   Identify the threshold $T_{\text{opt}}$ that minimizes this cost function.
+3. **Verify Generalization on Holdout Test Data:**
+   Evaluate $T_{\text{opt}}$ on the holdout test set to ensure the cost reduction generalizes.
+4. **Account for Boundary Overfitting & Safety Margins:**
+   If the validation set has very few positive cases, the optimal threshold can overfit the validation sample distribution. If raising the threshold to $0.807$ saves $110 in FPs but misses a single extra positive case in test, it costs \$200, resulting in a net cost increase. In highly asymmetric cases (where FN cost $\gg$ FP cost), it is safer to bias the threshold downward (towards higher Recall) to build in a safety margin against out-of-sample shifts.
 
 ### Q26: How would you explain your model's decision to a business stakeholder who doesn't understand ML?
 *(To be filled after Phase 12)*
 
 ---
 
-*Last updated: 2026-06-16 | Phase: 9 – Class Imbalance Strategies*
+*Last updated: 2026-06-17 | Phase: 11 – Business-Aware Threshold Tuning*

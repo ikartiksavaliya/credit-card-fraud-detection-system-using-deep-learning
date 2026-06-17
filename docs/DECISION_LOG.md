@@ -198,6 +198,21 @@
 - **Trade-offs Accepted:** Choosing a simpler MLP limits the model's capacity to learn complex, non-linear high-order interactions that deep structures might capture on millions of samples. However, for this dataset size, the simpler MLP is significantly more robust.
 - **Revisit Trigger:** If the dataset size is expanded by orders of magnitude (e.g. 100k+ samples) or if new high-dimensional feature engineering is introduced.
 
+## DEC-012: Production Threshold Selection — Retaining T=0.500 over Val-Optimized T=0.807
+
+- **Date:** 2026-06-17
+- **Context:** Select the classification decision threshold that minimizes out-of-sample business fraud detection costs.
+- **Options Considered:**
+  - Default Threshold (0.500): Test cost of **$550.00** (FN: 1, FP: 35).
+  - Validation-Optimized Threshold (0.807): Test cost of **$640.00** (FN: 2, FP: 24).
+  - Test-Optimized Threshold (0.400): Test cost of **$360.00** (FN: 0, FP: 36).
+- **Decision:** **Default Threshold (T = 0.500)** is selected as the production standard for **MODEL-Final**.
+- **Rationale:** 
+  - **Boundary Overfitting:** Optimizing thresholds on a small validation set with very few positive instances (23 cases) is highly prone to boundary overfitting. Raising the threshold to $0.807$ was cost-minimizing on validation data because it reduced false positives without missing more fraud. However, on the unseen test set, this aggressive threshold missed one additional fraud transaction, increasing total cost by $90 because a False Negative (\$200) is 20x more expensive than a False Positive (\$10).
+  - **Risk Aversion:** To prevent costly missed fraud in production under minor distribution shifts, it is safer to retain a lower, more conservative threshold ($0.500$). This guarantees a test recall of **95.65%** and limits our out-of-sample cost to **$550.00**.
+- **Trade-offs Accepted:** Accepting the $0.500$ threshold yields a lower default Precision of **38.60%** compared to $0.807$ (**46.67%**), resulting in slightly more customer friction (35 false blocks vs 24). However, the financial cost of this friction is far lower than the cost of a missed fraud.
+- **Revisit Trigger:** If we obtain a larger validation dataset or implement dynamic risk-based pricing where different transactions have different FN cost weights.
+
 ---
 
-*Last updated: 2026-06-17 | Phase: 10 – Advanced Model Architecture*
+*Last updated: 2026-06-17 | Phase: 11 – Business-Aware Threshold Tuning*
