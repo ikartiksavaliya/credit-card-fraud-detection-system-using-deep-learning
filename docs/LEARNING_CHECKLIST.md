@@ -160,4 +160,4 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 ---
 
-*Last updated: 2026-06-17 | Phase: 11 – Business-Aware Threshold Tuning*
+*Last updated: 2026-06-17 | Phase: 12 – Final Report + Portfolio Assembly*

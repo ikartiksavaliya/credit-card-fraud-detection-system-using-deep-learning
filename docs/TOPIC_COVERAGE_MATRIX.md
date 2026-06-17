@@ -68,4 +68,4 @@
 
 ---
 
-*Last updated: 2026-06-16 | Phase: 6 – Optimizer Study*
+*Last updated: 2026-06-17 | Phase: 12 – Final Report + Portfolio Assembly*
