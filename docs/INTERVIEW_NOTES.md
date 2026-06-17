@@ -248,8 +248,22 @@ The business optimal threshold must be optimized to balance this trade-off based
    If the validation set has very few positive cases, the optimal threshold can overfit the validation sample distribution. If raising the threshold to $0.807$ saves $110 in FPs but misses a single extra positive case in test, it costs \$200, resulting in a net cost increase. In highly asymmetric cases (where FN cost $\gg$ FP cost), it is safer to bias the threshold downward (towards higher Recall) to build in a safety margin against out-of-sample shifts.
 
 ### Q26: How would you explain your model's decision to a business stakeholder who doesn't understand ML?
-*(To be filled after Phase 12)*
+
+To explain a machine learning model's decisions to a business stakeholder without using complex ML jargon, I would focus on three main areas: **Inputs (Risk Signals)**, **Probability (The Risk Score)**, and **The Business Decision (The Threshold)**.
+
+1. **The Risk Score (0% to 100%):**
+   Instead of calling it a "sigmoidal activation output," explain it as a **Risk Meter**. When a transaction is submitted, the model analyzes all details and outputs a risk score. A 5% risk score means we are very confident the transaction is legitimate; a 95% risk score means it shows extremely high fraud signals.
+
+2. **The Risk Signals (Why did it score this way?):**
+   To build trust, we can explain the key factors driving the score (feature importances):
+   - *"We look at patterns like whether the card was used in an unexpected country (foreign transaction), if the billing address diverges from the purchase location (location mismatch), or if there's a sudden burst of transactions in a short time (velocity)."*
+   - By explaining these as risk triggers, the stakeholder can see that the model is acting like an experienced human fraud analyst, but scanning dozens of these triggers in milliseconds.
+
+3. **The Business Decision (The Line in the Sand):**
+   Explain that we must draw a line (the threshold) to decide when to block a transaction:
+   - *"If we block transactions with even a tiny 1% risk score, we will catch all fraud, but we will annoy millions of legitimate customers by declining their cards. If we only block transactions with a 99% risk score, we will never annoy legitimate customers, but we will let millions of dollars of fraud slip through."*
+   - *"We set our threshold at 50% risk. This was mathematically calculated to minimize the bank's total loss by balancing the high cost of missed fraud ($200 per transaction) against the lower cost of customer calls and card declines ($10 per call). By setting it here, we catch 95.65% of all fraud cases while keeping customer friction at a controlled, acceptable level."*
 
 ---
 
-*Last updated: 2026-06-17 | Phase: 11 – Business-Aware Threshold Tuning*
+*Last updated: 2026-06-17 | Phase: 12 – Final Report + Portfolio Assembly*

@@ -88,7 +88,7 @@ Produce a project that demonstrates:
 | 9 | 08_class_imbalance_study.ipynb | Class Imbalance Strategies | ✅ Completed |
 | 10 | 09_advanced_model.ipynb | Advanced Architecture | ✅ Completed |
 | 11 | 10_threshold_optimization.ipynb | Business-Aware Threshold Tuning | ✅ Completed |
-| 12 | 11_final_report.ipynb | Final Report + Portfolio Assembly | ⬜ Pending |
+| 12 | 11_final_report.ipynb | Final Report + Portfolio Assembly | ✅ Completed |
 
 ---
 
