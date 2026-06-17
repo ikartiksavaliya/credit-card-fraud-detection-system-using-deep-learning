@@ -164,4 +164,24 @@
 
 ---
 
-*Last updated: 2026-06-16 | Phase: 8 – Regularization Techniques*
+## DEC-010: Class Imbalance Handling Strategy — WeightedRandomSampler
+
+- **Date:** 2026-06-16
+- **Context:** Select the class imbalance handling strategy that optimizes the recall of the minority fraud class on holdout test data while preserving high overall classification capacity (measured by Precision-Recall AUC).
+- **Options Considered:**
+  - Baseline (No Handling): Train on raw imbalanced dataset (Test Recall: 73.91%, Test Precision: 85.00%, PR-AUC: 0.8599).
+  - Weighted BCE Loss: Apply a $pos\_weight$ scaling factor of ~65.04 to the positive class in BCE loss (Test Recall: 100.00%, Test Precision: 25.84%, PR-AUC: 0.8472).
+  - WeightedRandomSampler: Dynamically oversample minority class at DataLoader batch level (Test Recall: 95.65%, Test Precision: 44.90%, PR-AUC: 0.8580).
+  - SMOTE: Train on pre-generated synthetic oversampled dataset (Test Recall: 78.26%, Test Precision: 36.00%, PR-AUC: 0.6287).
+- **Decision:** **WeightedRandomSampler** (with sample weights inversely proportional to class counts, and replacement = True) is selected as the winning strategy for **MODEL-v5**.
+- **Rationale:** 
+  - In a fraud detection context, missing fraud is highly costly. WeightedRandomSampler dramatically improved Test Recall to **95.65%** (missing only 1 of 23 fraud transactions) while maintaining an outstanding **PR-AUC of 0.8580**, showing that the model retains its underlying classification separation power.
+  - While it lowers default threshold precision to **44.90%**, this is a direct result of shifting the logits' default bias towards a 50/50 balance. This can be easily corrected in Phase 11 by optimizing the classification decision threshold.
+  - SMOTE failed catastrophically (PR-AUC collapsed to **0.6287** and Precision to **36.00%**) because feature-space interpolation creates synthetic points in regions that belong to the majority class, confusing the decision boundary.
+  - Weighted BCE Loss achieved 100% recall but yielded a lower PR-AUC (0.8472) and a very high rate of False Positives (25.84% precision).
+- **Trade-offs Accepted:** Oversampling the minority class means the model is exposed to duplicates of fraud cases in training, but this is mitigated by early stopping on raw validation data which prevents memorization.
+- **Revisit Trigger:** If the model capacity is scaled up or during threshold optimization in Phase 11.
+
+---
+
+*Last updated: 2026-06-16 | Phase: 9 – Class Imbalance Strategies*

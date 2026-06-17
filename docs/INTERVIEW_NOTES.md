@@ -116,7 +116,21 @@ We use Binary Cross Entropy (BCE) instead of Mean Squared Error (MSE) for binary
 2. **Probabilistic Consistency**: BCE represents the negative log-likelihood of a Bernoulli distribution. Minimizing BCE is equivalent to Maximum Likelihood Estimation (MLE) for binary classification. MSE assumes a continuous Gaussian target, which does not match binary $\{0, 1\}$ classes.
 
 ### Q9: How does weighted BCE help with class imbalance?
-*(To be filled after Phase 9)*
+
+Weighted Binary Cross Entropy (BCE) addresses class imbalance by scaling the loss penalty associated with the minority class.
+
+In standard BCE, the loss for a single sample is:
+$$L = - [y \log \hat{y} + (1 - y) \log (1 - \hat{y})]$$
+Where $y \in \{0, 1\}$ is the true label and $\hat{y} = \sigma(z)$ is the predicted probability. When class imbalance is severe, the total loss and its gradients are dominated by the majority class $0$.
+
+Weighted BCE introduces a positive-class scaling factor $w_{\text{pos}}$ (commonly configured as $w_{\text{pos}} = \text{negative\_samples} / \text{positive\_samples}$):
+$$L_{\text{weighted}} = - [w_{\text{pos}} \cdot y \log \hat{y} + (1 - y) \log (1 - \hat{y})]$$
+
+**Mathematical Mechanism:**
+1. **Gradient Amplification:** The gradient of the loss with respect to the input logit $z$ is:
+   $$\frac{\partial L_{\text{weighted}}}{\partial z} = \begin{cases} \sigma(z) & \text{if } y = 0 \\ w_{\text{pos}}(\sigma(z) - 1) & \text{if } y = 1 \end{cases}$$
+   If the model makes an error on a minority sample ($y=1$ but predicts a low probability $\sigma(z) \to 0$), the backpropagated gradient is multiplied by $w_{\text{pos}}$. This forces a massive parameter update to correct the error. In our dataset, this update is $\approx 65\times$ larger than an update for a majority class error.
+2. **Logit Shift:** Penalizing False Negatives more heavily shifts the model's logits higher, effectively moving the decision boundary closer to the majority class and increasing Recall at the cost of Precision.
 
 ---
 
@@ -172,13 +186,30 @@ We use Binary Cross Entropy (BCE) instead of Mean Squared Error (MSE) for binary
 ## ⚖️ CLASS IMBALANCE
 
 ### Q21: What is class imbalance and why is accuracy a misleading metric for fraud detection?
-*(To be filled after Phase 9)*
+
+* **Class Imbalance:** Occurs when one class (the majority class, e.g., legitimate transactions) vastly outnumbers the other class (the minority class, e.g., fraud) in the training dataset. In our credit card dataset, fraud represents only ~1.5% of the data (and ~0.17% in real-world systems).
+* **Why Accuracy is Misleading:** Accuracy measures the percentage of correct predictions:
+  $$\text{Accuracy} = \frac{\text{True Positives} + \text{True Negatives}}{\text{Total Samples}}$$
+  If a dataset has 98.5% legitimate transactions and 1.5% fraud, a naive classifier that predicts "legitimate" for every transaction will achieve **98.5% accuracy**. However, its fraud detection rate (Recall) is **0%**. Accuracy rewards the model for predicting the majority class correctly, completely hiding the fact that it fails to detect the critical minority class.
 
 ### Q22: Compare SMOTE, class weights, and WeightedRandomSampler. When would you use each?
-*(To be filled after Phase 9)*
+
+| Technique | Level | Description | Pros | Cons | Best Used For |
+|---|---|---|---|---|---|
+| **Class Weights / Weighted BCE** | Loss | Scales loss gradients for minority class errors during backpropagation. | Simple; no memory overhead; doesn't duplicate data. | Can cause unstable gradients if weights are extremely large; some batches may contain zero fraud samples. | Medium imbalance; constraint-heavy environments. |
+| **WeightedRandomSampler** | Batch | Samples training data with replacement to create balanced (e.g. 50/50) mini-batches. | Dynamically balances batches; guarantees stable, frequent minority gradients; keeps original data intact. | Duplicates minority samples, which can cause overfitting without proper regularization. | Deep Learning models on highly imbalanced tabular or image data. |
+| **SMOTE** | Data | Synthesizes new minority samples by interpolating between nearest neighbors in feature space. | Expands the minority decision boundary instead of repeating existing points. | Can create noisy/invalid samples in sparse, high-dimensional tabular space, collapsing Precision. | Shallow ML models (e.g. SVM, Random Forests) on moderate tabular imbalance. |
 
 ### Q23: What is PR-AUC and why is it preferred over ROC-AUC for imbalanced datasets?
-*(To be filled after Phase 9)*
+
+* **Definitions:**
+  * **ROC Curve** plots True Positive Rate (Recall) vs False Positive Rate (FPR):
+    $$\text{FPR} = \frac{\text{False Positives}}{\text{False Positives} + \text{True Negatives}}$$
+  * **PR Curve** plots Precision vs Recall (TPR).
+* **Why PR-AUC is Preferred:**
+  * FPR includes True Negatives ($\text{TN}$) in its denominator. On highly imbalanced datasets, $\text{TN}$ is extremely large. Even if the model makes many False Positives (e.g., flagging 500 legitimate transactions as fraud), the FPR remains very small because the denominator is huge. Thus, the ROC curve appears highly optimistic, showing a near-perfect AUC (e.g., 0.99) even when the model makes a large number of false alarms.
+  * Precision is normalized by predicted positives ($\text{TP} + \text{FP}$). Because it does not include $\text{TN}$, Precision directly exposes the frequency of false alarms relative to true fraud cases. A model with 500 FP and only 20 TP will have a very low Precision ($\approx 3.8\%$), causing the PR curve and PR-AUC to drop dramatically.
+  * Therefore, PR-AUC provides a much more honest and sensitive metric for evaluation when the minority class is rare and of primary interest.
 
 ---
 
@@ -206,4 +237,4 @@ The business optimal threshold must be optimized to balance this trade-off based
 
 ---
 
-*Last updated: 2026-06-13 | Phase: 4 – Baseline MLP*
+*Last updated: 2026-06-16 | Phase: 9 – Class Imbalance Strategies*

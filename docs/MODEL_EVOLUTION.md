@@ -169,10 +169,33 @@ Production Model
 
 ## MODEL-v5: Class-Balanced MLP
 
-- **Date:** TBD (Notebook 08)
-- **Change:** Apply best class imbalance strategy
-- **Expected Impact:** Higher recall on fraud class
-- **Metrics:** To be filled
+- **Date:** 2026-06-16 (Notebook 08)
+- **Change:** Integrate `WeightedRandomSampler` into the PyTorch training DataLoader. This balances mini-batches dynamically by drawing positive and negative samples with replacement according to their inverse class frequencies.
+- **Hypothesis:** By balancing the class distribution at the mini-batch level (making it ~50/50 on average), the model's loss gradients are not overwhelmed by the majority class. This will significantly increase the fraud class recall on the holdout test set while preserving high PR-AUC.
+- **Architecture:**
+  - Input Layer: 13 features
+  - Hidden Layer 1: 64 neurons, Leaky ReLU (slope = 0.01)
+  - Hidden Layer 2: 32 neurons, Leaky ReLU (slope = 0.01)
+  - Output Layer: 1 neuron, Sigmoid (logits used in training)
+- **Training Config:**
+  - Optimizer: AdamW (lr=0.001)
+  - Scheduler: Warmup Cosine (warmup_epochs=5, total_epochs=50, eta_min=0.0001)
+  - Weight Initialization: Random Uniform (bounds $[-0.05, 0.05]$)
+  - Imbalance Handling: WeightedRandomSampler (replacement = True)
+  - Regularization: Early Stopping Only (patience = 5)
+  - Loss: BCEWithLogitsLoss (unweighted)
+  - Epochs: 50 (Early stopped at epoch 21, best weights from epoch 16)
+  - Batch Size: 64
+- **Metrics:**
+
+| Metric | Train | Validation | Test |
+|---|---|---|---|
+| Loss | 0.0340 | 0.0509 | 0.0514 |
+| Precision | 55.26% | 48.84% | 44.90% |
+| Recall | 100.00% | 91.30% | 95.65% |
+| F1 | 71.19% | 63.64% | 61.11% |
+| ROC-AUC | 0.9981 | 0.9953 | 0.9967 |
+| PR-AUC | 0.8802 | 0.8602 | 0.8580 |
 
 ---
 
@@ -193,4 +216,4 @@ Production Model
 
 ---
 
-*Last updated: 2026-06-16 | Phase: 8 – Regularization Techniques*
+*Last updated: 2026-06-16 | Phase: 9 – Class Imbalance Strategies*

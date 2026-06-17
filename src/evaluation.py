@@ -63,7 +63,7 @@ def evaluate_model(
     all_targets = torch.cat(all_targets)
     
     # Compute loss (using logits for stability)
-    loss = criterion(all_logits, all_targets.float()).item()
+    loss = criterion(all_logits.to(device), all_targets.float().to(device)).item()
     
     # Calculate probabilities and predictions
     probs = torch.sigmoid(all_logits).numpy()

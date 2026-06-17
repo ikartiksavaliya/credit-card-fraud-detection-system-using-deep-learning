@@ -112,17 +112,21 @@ Each entry follows this template:
 
 ## Class Imbalance Study (Notebook 08)
 
-*To be filled during Phase 9 execution.*
+- **Date:** 2026-06-16
+- **Notebook:** 08_class_imbalance_study.ipynb
+- **Hypothesis:** Class balancing techniques (Weighted BCE Loss, WeightedRandomSampler, and SMOTE) will significantly improve the minority class recall on the holdout test set compared to the imbalanced Baseline.
+- **Config:** MODEL-v4 MLP (Leaky ReLU, AdamW, Warmup Cosine scheduler, Random Uniform weight initialization, Early Stopping patience = 5).
+- **Results:**
 
-| Strategy | Recall (Fraud) | Precision (Fraud) | F1 (Fraud) | PR-AUC |
-|---|---|---|---|---|
-| Baseline (no handling) | — | — | — | — |
-| Weighted BCE Loss | — | — | — | — |
-| WeightedRandomSampler | — | — | — | — |
-| SMOTE | — | — | — | — |
+| Strategy | Recall (Fraud) | Precision (Fraud) | F1 (Fraud) | PR-AUC | Epochs Run |
+|---|---|---|---|---|---|
+| Baseline (no handling) | 73.91% | 85.00% | 79.07% | 0.8599 | 29 |
+| Weighted BCE Loss | 100.00% | 25.84% | 41.07% | 0.8472 | 12 |
+| WeightedRandomSampler | 95.65% | 44.90% | 61.11% | 0.8580 | 21 |
+| SMOTE | 78.26% | 36.00% | 49.32% | 0.6287 | 20 |
 
-**Winner:** TBD | **Business reasoning:** TBD
+**Winner:** WeightedRandomSampler | **Reasoning:** WeightedRandomSampler achieved a dramatic increase in Test Recall (**95.65%** compared to Baseline's **73.91%**) while maintaining an excellent **PR-AUC of 0.8580** (nearly matching Baseline's **0.8599**). While the default threshold of 0.5 results in a lower Test Precision (**44.90%**), the high PR-AUC proves that the model retains its strong class separation power, and the precision-recall trade-off can be dynamically tuned in subsequent phases. SMOTE collapsed PR-AUC to **0.6287** and Precision to **36.00%** because feature-space interpolation creates noisy samples in the overlapping spaces between sparse fraud clusters.
 
 ---
 
-*Last updated: 2026-06-16 | Phase: 8 – Regularization Techniques*
+*Last updated: 2026-06-16 | Phase: 9 – Class Imbalance Strategies*
