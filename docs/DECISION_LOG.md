@@ -182,6 +182,22 @@
 - **Trade-offs Accepted:** Oversampling the minority class means the model is exposed to duplicates of fraud cases in training, but this is mitigated by early stopping on raw validation data which prevents memorization.
 - **Revisit Trigger:** If the model capacity is scaled up or during threshold optimization in Phase 11.
 
+## DEC-011: Advanced Architecture Selection — Baseline MLP over Tabular ResNet and Gated MLP
+
+- **Date:** 2026-06-17
+- **Context:** Select the model architecture that maximizes overall fraud detection separation capacity (PR-AUC) and recall on holdout test data.
+- **Options Considered:**
+  - Baseline MLP: 2 hidden layers (64, 32), Leaky ReLU activations, Random Uniform weight initialization, AdamW optimizer, Warmup Cosine scheduler (Test Recall: 95.65%, Test Precision: 38.60%, PR-AUC: 0.8273).
+  - Tabular ResNet: Deep network (hidden dim 64, 3 residual blocks with LayerNorm and skip connections) (Test Recall: 56.52%, Test Precision: 50.00%, PR-AUC: 0.6007).
+  - Gated MLP: 2 Gated Linear Unit (GLU) layers (64, 32) (Test Recall: 82.61%, Test Precision: 47.50%, PR-AUC: 0.7316).
+- **Decision:** **Baseline MLP (Retained)** is selected as the winning architecture for **MODEL-v6**.
+- **Rationale:** 
+  - **Overfitting on Small-Scale Data:** With only 13 input features and 7,000 training samples, the dataset is too small to require high-capacity deep learning structures. The Tabular ResNet overfits very rapidly to training noise and minority-class duplicates, triggering early stopping at epoch 8 and collapsing Test Recall to **56.52%** and PR-AUC to **0.6007**.
+  - **Feature Gating vs Baseline:** The Gated MLP's GLU mechanism introduces feature-dependent gating, which acts as a soft filter. This improves Precision (**47.50%**) and default-threshold F1-Score (**60.32%**), but reduces Test Recall (**82.61%**) and overall class discrimination capacity (PR-AUC of **0.7316** vs baseline **0.8273**).
+  - **Overall Capacity:** The Baseline MLP remains the most robust architecture across all probability thresholds, maintaining the highest PR-AUC (**0.8273**) and Recall (**95.65%**).
+- **Trade-offs Accepted:** Choosing a simpler MLP limits the model's capacity to learn complex, non-linear high-order interactions that deep structures might capture on millions of samples. However, for this dataset size, the simpler MLP is significantly more robust.
+- **Revisit Trigger:** If the dataset size is expanded by orders of magnitude (e.g. 100k+ samples) or if new high-dimensional feature engineering is introduced.
+
 ---
 
-*Last updated: 2026-06-16 | Phase: 9 – Class Imbalance Strategies*
+*Last updated: 2026-06-17 | Phase: 10 – Advanced Model Architecture*

@@ -142,3 +142,159 @@ class MLP(nn.Module):
             torch.Tensor: Model logits of shape (batch_size, 1).
         """
         return self.network(x)
+
+
+class ResNetBlock(nn.Module):
+    """
+    A single residual block for tabular data.
+    Uses LayerNorm instead of BatchNorm for stability on highly imbalanced data.
+    """
+    def __init__(self, dim: int, dropout_rate: float = 0.0, use_layer_norm: bool = True):
+        super().__init__()
+        self.linear1 = nn.Linear(dim, dim)
+        self.norm1 = nn.LayerNorm(dim) if use_layer_norm else nn.Identity()
+        self.activation = nn.LeakyReLU(negative_slope=0.01)
+        self.dropout1 = nn.Dropout(dropout_rate) if dropout_rate > 0 else nn.Identity()
+        
+        self.linear2 = nn.Linear(dim, dim)
+        self.norm2 = nn.LayerNorm(dim) if use_layer_norm else nn.Identity()
+        self.dropout2 = nn.Dropout(dropout_rate) if dropout_rate > 0 else nn.Identity()
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        out = self.linear1(x)
+        out = self.norm1(out)
+        out = self.activation(out)
+        out = self.dropout1(out)
+        
+        out = self.linear2(out)
+        out = self.norm2(out)
+        out = self.dropout2(out)
+        
+        # Residual connection followed by activation
+        return self.activation(out + x)
+
+
+class TabularResNet(nn.Module):
+    """
+    Tabular ResNet consisting of an input projection layer, multiple ResNetBlocks,
+    and a final linear output layer.
+    """
+    def __init__(
+        self,
+        input_dim: int,
+        hidden_dim: int = 64,
+        num_blocks: int = 3,
+        dropout_rate: float = 0.0,
+        use_layer_norm: bool = True,
+        weight_init: str = "uniform"
+    ):
+        super().__init__()
+        # Project input to hidden dimension
+        self.input_layer = nn.Linear(input_dim, hidden_dim)
+        self.input_activation = nn.LeakyReLU(negative_slope=0.01)
+        
+        self.blocks = nn.ModuleList([
+            ResNetBlock(hidden_dim, dropout_rate, use_layer_norm)
+            for _ in range(num_blocks)
+        ])
+        
+        # Classification head
+        self.output_layer = nn.Linear(hidden_dim, 1)
+        
+        self._initialize_weights(weight_init)
+        
+    def _initialize_weights(self, init_type: str) -> None:
+        init_type = init_type.lower()
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                if init_type in ["uniform", "random_uniform"]:
+                    nn.init.uniform_(m.weight, a=-0.05, b=0.05)
+                elif init_type in ["normal", "random_normal"]:
+                    nn.init.normal_(m.weight, mean=0.0, std=0.05)
+                elif init_type in ["xavier", "xavier_uniform"]:
+                    nn.init.xavier_uniform_(m.weight, gain=nn.init.calculate_gain("leaky_relu", 0.01))
+                elif init_type == "xavier_normal":
+                    nn.init.xavier_normal_(m.weight, gain=nn.init.calculate_gain("leaky_relu", 0.01))
+                elif init_type in ["kaiming", "kaiming_uniform"]:
+                    nn.init.kaiming_uniform_(m.weight, a=0.01, nonlinearity="leaky_relu")
+                elif init_type == "kaiming_normal":
+                    nn.init.kaiming_normal_(m.weight, a=0.01, nonlinearity="leaky_relu")
+                
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0.0)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        out = self.input_activation(self.input_layer(x))
+        for block in self.blocks:
+            out = block(out)
+        return self.output_layer(out)
+
+
+class GatedMLPBlock(nn.Module):
+    """
+    A single MLP layer with a Gated Linear Unit (GLU) mechanism.
+    GLU gating dynamically filters features: GLU(x) = LeakyReLU(Linear_val(x)) * Sigmoid(Linear_gate(x))
+    """
+    def __init__(self, input_dim: int, output_dim: int, dropout_rate: float = 0.0):
+        super().__init__()
+        self.linear_val = nn.Linear(input_dim, output_dim)
+        self.linear_gate = nn.Linear(input_dim, output_dim)
+        
+        self.activation = nn.LeakyReLU(negative_slope=0.01)
+        self.gate_activation = nn.Sigmoid()
+        self.dropout = nn.Dropout(dropout_rate) if dropout_rate > 0 else nn.Identity()
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        val = self.activation(self.linear_val(x))
+        gate = self.gate_activation(self.linear_gate(x))
+        out = val * gate
+        return self.dropout(out)
+
+
+class GatedMLP(nn.Module):
+    """
+    Gated Multi-Layer Perceptron (GLU MLP) for tabular classification.
+    """
+    def __init__(
+        self,
+        input_dim: int,
+        hidden_dims: List[int],
+        dropout_rate: float = 0.0,
+        weight_init: str = "uniform"
+    ):
+        super().__init__()
+        
+        layers = []
+        prev_dim = input_dim
+        for h_dim in hidden_dims:
+            layers.append(GatedMLPBlock(prev_dim, h_dim, dropout_rate))
+            prev_dim = h_dim
+            
+        self.network = nn.Sequential(*layers)
+        self.output_layer = nn.Linear(prev_dim, 1)
+        
+        self._initialize_weights(weight_init)
+        
+    def _initialize_weights(self, init_type: str) -> None:
+        init_type = init_type.lower()
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                if init_type in ["uniform", "random_uniform"]:
+                    nn.init.uniform_(m.weight, a=-0.05, b=0.05)
+                elif init_type in ["normal", "random_normal"]:
+                    nn.init.normal_(m.weight, mean=0.0, std=0.05)
+                elif init_type in ["xavier", "xavier_uniform"]:
+                    nn.init.xavier_uniform_(m.weight, gain=nn.init.calculate_gain("leaky_relu", 0.01))
+                elif init_type == "xavier_normal":
+                    nn.init.xavier_normal_(m.weight, gain=nn.init.calculate_gain("leaky_relu", 0.01))
+                elif init_type in ["kaiming", "kaiming_uniform"]:
+                    nn.init.kaiming_uniform_(m.weight, a=0.01, nonlinearity="leaky_relu")
+                elif init_type == "kaiming_normal":
+                    nn.init.kaiming_normal_(m.weight, a=0.01, nonlinearity="leaky_relu")
+                
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0.0)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        out = self.network(x)
+        return self.output_layer(out)
