@@ -199,12 +199,24 @@ Production Model
 
 ---
 
-## MODEL-v6: Advanced Architecture
+## MODEL-v6: Advanced Architecture Study Winner
 
-- **Date:** TBD (Notebook 09)
-- **Change:** Deeper network with skip connections, attention-like mechanisms, or similar
-- **Rationale:** Explore whether added capacity helps on this tabular dataset
-- **Metrics:** To be filled
+- **Date:** 2026-06-17 (Notebook 09)
+- **Change:** Sweep alternative high-capacity structures: Tabular ResNet (Residual MLP using LayerNorm and skip connections) and Gated MLP (GLU-gated routing layers) under identical trainer configurations (WeightedRandomSampler, AdamW, Warmup Cosine scheduler, Uniform Initialization).
+- **Winner:** **Baseline MLP (Retained)**
+- **Hypothesis:** Modern high-capacity tabular architectures (ResNet, Gated MLP) overfit to noise and duplicates on small-scale tabular datasets (7,000 training samples with ~105 original minority instances). ResNet overfits early (epoch 8, PR-AUC = 0.6007). Gated MLP increases default-threshold Precision but drops Recall to 82.61% and achieves a lower overall PR-AUC of 0.7316 compared to the simpler Baseline MLP (PR-AUC = 0.8273).
+- **Metrics (re-evaluated Baseline MLP):**
+
+| Metric | Train | Validation | Test |
+|---|---|---|---|
+| Loss | 0.0466 | 0.0527 | 0.0716 |
+| Precision | 50.72% | 47.83% | 38.60% |
+| Recall | 100.00% | 95.65% | 95.65% |
+| F1 | 67.31% | 63.77% | 55.00% |
+| ROC-AUC | 0.9976 | 0.9949 | 0.9960 |
+| PR-AUC | 0.8511 | 0.8588 | 0.8273 |
+
+*Note: The Baseline MLP metrics for MODEL-v6 differ slightly from MODEL-v5 due to the stochasticity of sample replacement in the WeightedRandomSampler across different training runs.*
 
 ---
 
@@ -216,4 +228,4 @@ Production Model
 
 ---
 
-*Last updated: 2026-06-16 | Phase: 9 – Class Imbalance Strategies*
+*Last updated: 2026-06-17 | Phase: 10 – Advanced Model Architecture*

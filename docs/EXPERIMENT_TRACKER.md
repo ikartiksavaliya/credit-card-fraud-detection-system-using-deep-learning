@@ -127,6 +127,22 @@ Each entry follows this template:
 
 **Winner:** WeightedRandomSampler | **Reasoning:** WeightedRandomSampler achieved a dramatic increase in Test Recall (**95.65%** compared to Baseline's **73.91%**) while maintaining an excellent **PR-AUC of 0.8580** (nearly matching Baseline's **0.8599**). While the default threshold of 0.5 results in a lower Test Precision (**44.90%**), the high PR-AUC proves that the model retains its strong class separation power, and the precision-recall trade-off can be dynamically tuned in subsequent phases. SMOTE collapsed PR-AUC to **0.6287** and Precision to **36.00%** because feature-space interpolation creates noisy samples in the overlapping spaces between sparse fraud clusters.
 
+## Advanced Model Architecture Study (Notebook 09)
+
+- **Date:** 2026-06-17
+- **Notebook:** 09_advanced_model.ipynb
+- **Hypothesis:** Adding model capacity via residual connections (Tabular ResNet) or feature gating (Gated MLP) will improve the model's classification capacity and result in higher PR-AUC and Recall.
+- **Config:** Standardizing on WeightedRandomSampler training, AdamW, Warmup Cosine scheduler, Random Uniform weight initialization, Early Stopping patience = 5.
+- **Results:**
+
+| Architecture | Recall (Fraud) | Precision (Fraud) | F1 (Fraud) | ROC-AUC | PR-AUC | Epochs Run |
+|---|---|---|---|---|---|---|
+| Baseline MLP | 95.65% | 38.60% | 55.00% | 0.9960 | 0.8273 | 19 |
+| Tabular ResNet | 56.52% | 50.00% | 53.06% | 0.9878 | 0.6007 | 8 |
+| Gated MLP | 82.61% | 47.50% | 60.32% | 0.9939 | 0.7316 | 29 |
+
+**Winner:** Baseline MLP | **Reasoning:** The Baseline MLP remains the most robust architecture on this tabular dataset, achieving the highest PR-AUC (**0.8273**) and Recall (**95.65%**). Tabular ResNet (Residual MLP) suffers from severe overfitting due to excessive parameters, stopping at epoch 8 with a collapsed PR-AUC (**0.6007**) and Recall (**56.52%**). Gated MLP achieves a slightly higher F1 score (**60.32%**) at the default 0.5 threshold by boosting Precision, but its overall discrimination power is lower than the baseline (PR-AUC of **0.7316** vs **0.8273**). Thus, we retain the baseline MLP architecture as our champion (MODEL-v6) heading into final threshold optimization.
+
 ---
 
-*Last updated: 2026-06-16 | Phase: 9 – Class Imbalance Strategies*
+*Last updated: 2026-06-17 | Phase: 10 – Advanced Model Architecture*

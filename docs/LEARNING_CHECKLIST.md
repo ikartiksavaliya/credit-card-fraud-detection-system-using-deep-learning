@@ -139,6 +139,15 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 ---
 
+## 🧱 ADVANCED ARCHITECTURES
+
+| Topic | Explained | Implemented | Evaluated | Documented | Status |
+|---|---|---|---|---|---|
+| Tabular ResNet (Residual connections) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Gated MLP (Gated Linear Units) | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+---
+
 ## 📊 EVALUATION METRICS
 
 | Metric | Explained | Implemented | Used in Experiments | Status |
@@ -151,4 +160,4 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 ---
 
-*Last updated: 2026-06-16 | Phase: 9 – Class Imbalance Strategies*
+*Last updated: 2026-06-17 | Phase: 10 – Advanced Model Architecture*
