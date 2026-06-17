@@ -53,7 +53,7 @@ This means we should bias our threshold toward **higher recall** (catch more fra
 
 ---
 
-## 4. THRESHOLD OPTIMIZATION FRAMEWORK
+## 4. THRESHOLD OPTIMIZATION FRAMEWORK & EMPIRICAL SAVINGS
 
 Standard classifiers output probabilities: P(fraud | transaction)
 
@@ -61,12 +61,28 @@ The classification threshold determines:
 - **Low threshold (e.g., 0.3):** Catch almost all fraud, but block many legitimate customers → High Recall, Low Precision
 - **High threshold (e.g., 0.7):** Only flag very suspicious transactions → Low Recall, High Precision
 
-**Business-Optimal Threshold:**
-```
-Minimize: (FN_count × cost_FN) + (FP_count × cost_FP)
-```
+**Business-Optimal Threshold Optimization:**
+Using validation set predictions, we ran a threshold sweep to minimize:
+$$\text{Total Cost} = (\text{FN\_count} \times \$200) + (\text{FP\_count} \times \$10)$$
 
-This calculation will be done in **Notebook 10: Threshold Optimization**.
+### Empirical Results (Validation vs. Holdout Test)
+
+1. **Validation Set Optimization:**
+   - **Default Threshold (0.5):** Total Cost = **$440.00** (FN: 1, FP: 24)
+   - **Optimal Threshold (0.807):** Total Cost = **$340.00** (FN: 1, FP: 14)
+   - **Validation Cost Savings:** **$100.00 (22.73% reduction)**
+   - *Result:* Raising the threshold to 0.807 eliminated 10 false alarms without missing any additional fraud.
+
+2. **Holdout Test Set Evaluation (Generalization):**
+   - **Default Threshold (0.5):** Total Cost = **$550.00** (FN: 1, FP: 35)
+   - **Optimized Threshold (0.807):** Total Cost = **$640.00** (FN: 2, FP: 24)
+   - **Cost Shift:** **+$90.00 (16.36% cost increase)**
+
+### 💡 Crucial Product Engineering Lesson: Boundary Overfitting
+On small datasets with extremely few minority samples (only 23 fraud cases in each split), threshold optimization on a validation set is highly sensitive to single-sample confidence shifts.
+- Raising the threshold to **0.807** was mathematically optimal on validation data, but on the holdout test set, it caused **one additional fraud transaction to be missed** (FN went from 1 to 2).
+- Because a missed fraud ($200) is 20x more expensive than a false alarm ($10), missing that single transaction erased the $110 saved by reducing false alarms (FP decreased from 35 to 24), leading to a net cost increase.
+- **Production Recommendation:** For maximum business safety, we recommend **retaining the default threshold of 0.500** (or a slightly more conservative threshold like 0.450) as our production standard (**MODEL-Final**). This prioritizes recall, yielding a lower out-of-sample cost ($550 vs $640) and guaranteeing that we only miss a single fraud transaction.
 
 ---
 
@@ -115,4 +131,4 @@ A critical consideration for production deployment:
 
 ---
 
-*Last updated: 2026-06-12 | Phase: 1 – Planning*
+*Last updated: 2026-06-17 | Phase: 11 – Business-Aware Threshold Tuning*

@@ -156,8 +156,8 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 | Precision / Recall / F1 | ✅ | ✅ | ✅ | ✅ |
 | ROC-AUC | ✅ | ✅ | ✅ | ✅ |
 | PR-AUC | ✅ | ✅ | ✅ | ✅ |
-| Threshold Optimization | ⬜ | ⬜ | ⬜ | ⬜ |
+| Threshold Optimization | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
-*Last updated: 2026-06-17 | Phase: 10 – Advanced Model Architecture*
+*Last updated: 2026-06-17 | Phase: 11 – Business-Aware Threshold Tuning*

@@ -143,6 +143,25 @@ Each entry follows this template:
 
 **Winner:** Baseline MLP | **Reasoning:** The Baseline MLP remains the most robust architecture on this tabular dataset, achieving the highest PR-AUC (**0.8273**) and Recall (**95.65%**). Tabular ResNet (Residual MLP) suffers from severe overfitting due to excessive parameters, stopping at epoch 8 with a collapsed PR-AUC (**0.6007**) and Recall (**56.52%**). Gated MLP achieves a slightly higher F1 score (**60.32%**) at the default 0.5 threshold by boosting Precision, but its overall discrimination power is lower than the baseline (PR-AUC of **0.7316** vs **0.8273**). Thus, we retain the baseline MLP architecture as our champion (MODEL-v6) heading into final threshold optimization.
 
+## Business-Aware Threshold Optimization (Notebook 10)
+
+- **Date:** 2026-06-17
+- **Notebook:** 10_threshold_optimization.ipynb
+- **Hypothesis:** Selecting a threshold other than the default $0.5$ based on the business cost function ($FN = \$200$, $FP = \$10$) will minimize the bank's total fraud detection losses.
+- **Config:** Champion Baseline MLP (MODEL-v6). Swept thresholds $0.0 \leq T \leq 1.0$ in steps of $0.001$.
+- **Results:**
+
+| Split | Threshold | Recall | Precision | F1-Score | False Negatives (FN) | False Positives (FP) | Total Business Cost |
+|---|---|---|---|---|---|---|---|
+| **Validation** | 0.500 (Default) | 95.65% | 47.83% | 63.77% | 1 | 24 | $440.00 |
+| **Validation** | 0.807 (Optimized) | 95.65% | 61.11% | 74.58% | 1 | 14 | **$340.00** |
+| **Holdout Test** | 0.500 (Default) | 95.65% | 38.60% | 55.00% | 1 | 35 | **$550.00** |
+| **Holdout Test** | 0.807 (Optimized) | 91.30% | 46.67% | 61.76% | 2 | 24 | $640.00 |
+| **Holdout Test** | 0.400 (Conservative) | 100.00% | 38.98% | 56.10% | 0 | 36 | **$360.00** |
+
+**Winner:** Default Threshold ($T = 0.500$) for production safety, with $T = 0.400$ as a candidate for maximum recall (zero missed fraud on test set).
+**Reasoning:** Although $T = 0.807$ minimized cost on validation data by eliminating 10 false alerts without missing any additional fraud, this aggressive threshold overfit the validation boundary. On the test set, it missed a second fraud transaction, increasing total cost to **$640.00** (+$90.00$ increase) because FNs are 20x more expensive than FPs. Lowering the threshold to $0.400$ yields the absolute lowest out-of-sample cost of **$360.00** by catching 100% of fraud, but adds customer friction (36 FPs). Retaining $T = 0.500$ acts as a balanced compromise, yielding a low test cost of **$550.00** and preserving a high test Recall of **95.65%**.
+
 ---
 
-*Last updated: 2026-06-17 | Phase: 10 – Advanced Model Architecture*
+*Last updated: 2026-06-17 | Phase: 11 – Business-Aware Threshold Tuning*

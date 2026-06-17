@@ -222,10 +222,21 @@ Production Model
 
 ## MODEL-Final: Business-Optimized Model
 
-- **Date:** TBD (Notebook 10–11)
-- **Change:** Optimal threshold tuned for business objective (minimize total loss)
-- **Metrics:** To be filled — this is the final production model
+- **Date:** 2026-06-17 (Notebook 10)
+- **Change:** Evaluate classification thresholds against a business-aware cost function ($FN = \$200$, $FP = \$10$) to select the optimal production decision threshold.
+- **Selection:** Retain the **Default Threshold (T = 0.500)** as the production standard.
+- **Hypothesis:** Although threshold tuning on validation data selected $T = 0.807$, evaluating it on holdout test data revealed boundary overfitting. Raising the threshold to $0.807$ missed an additional fraud transaction, which increased the total business cost by $90 (total cost $640) because missed fraud is 20x more expensive than false alerts. Retaining the conservative default threshold of $0.500$ acts as a safety margin, achieving a lower test cost of **$550.00** and catching **95.65%** of all fraud transactions.
+- **Metrics (under T = 0.500):**
+
+| Metric | Train | Validation | Test |
+|---|---|---|---|
+| Loss | 0.0466 | 0.0527 | 0.0716 |
+| Precision | 50.72% | 47.83% | 38.60% |
+| Recall | 100.00% | 95.65% | 95.65% |
+| F1 | 67.31% | 63.77% | 55.00% |
+| ROC-AUC | 0.9976 | 0.9949 | 0.9960 |
+| PR-AUC | 0.8511 | 0.8588 | 0.8273 |
 
 ---
 
-*Last updated: 2026-06-17 | Phase: 10 – Advanced Model Architecture*
+*Last updated: 2026-06-17 | Phase: 11 – Business-Aware Threshold Tuning*

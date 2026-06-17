@@ -86,8 +86,8 @@ Produce a project that demonstrates:
 | 7 | 06_initialization_study.ipynb | Weight Initialization Study | ✅ Completed |
 | 8 | 07_regularization_study.ipynb | Regularization Techniques | ✅ Completed |
 | 9 | 08_class_imbalance_study.ipynb | Class Imbalance Strategies | ✅ Completed |
-| 10 | 09_advanced_model.ipynb | Advanced Architecture | ⬜ Pending |
-| 11 | 10_threshold_optimization.ipynb | Business-Aware Threshold Tuning | ⬜ Pending |
+| 10 | 09_advanced_model.ipynb | Advanced Architecture | ✅ Completed |
+| 11 | 10_threshold_optimization.ipynb | Business-Aware Threshold Tuning | ✅ Completed |
 | 12 | 11_final_report.ipynb | Final Report + Portfolio Assembly | ⬜ Pending |
 
 ---
