@@ -44,7 +44,7 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 |---|---|---|---|---|---|
 | Binary Cross Entropy | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Cross Entropy (multi-class) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| Weighted BCE (class imbalance) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Weighted BCE (class imbalance) | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
@@ -133,9 +133,9 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 | Strategy | Explained | Implemented | Evaluated | Documented | Status |
 |---|---|---|---|---|---|
 | Baseline (no handling) | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Weighted BCE Loss | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| WeightedRandomSampler | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
-| SMOTE | ✅ | ✅ | ⬜ | ✅ | 🔄 |
+| Weighted BCE Loss | ✅ | ✅ | ✅ | ✅ | ✅ |
+| WeightedRandomSampler | ✅ | ✅ | ✅ | ✅ | ✅ |
+| SMOTE | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
@@ -151,4 +151,4 @@ A topic is ONLY marked ✅ when ALL four gates are passed:
 
 ---
 
-*Last updated: 2026-06-16 | Phase: 8 – Regularization Techniques*
+*Last updated: 2026-06-16 | Phase: 9 – Class Imbalance Strategies*
