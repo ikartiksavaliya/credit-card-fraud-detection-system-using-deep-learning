@@ -137,49 +137,120 @@ $$L_{\text{weighted}} = - [w_{\text{pos}} \cdot y \log \hat{y} + (1 - y) \log (1
 ## 🚀 OPTIMIZERS
 
 ### Q10: Explain Adam optimizer. What are β1 and β2?
-*(To be filled after Phase 6)*
+
+Adam (Adaptive Moment Estimation) is an optimization algorithm that combines the concepts of **Momentum** (accelerating descent in the right direction) and **RMSprop** (adjusting learning rates per parameter based on gradient scale).
+- **First Moment ($m_t$, Momentum):** Tracks the exponentially decaying average of past gradients. It helps smooth out oscillations and accelerate updates along low-curvature directions.
+  $$m_t = \beta_1 m_{t-1} + (1 - \beta_1) g_t$$
+- **Second Moment ($v_t$, RMSprop):** Tracks the exponentially decaying average of past *squared* gradients. It divides the learning rate by the square root of $v_t$, effectively shrinking step sizes for parameters with massive gradients and expanding them for parameters with sparse, tiny gradients.
+  $$v_t = \beta_2 v_{t-1} + (1 - \beta_2) g_t^2$$
+- **Bias Correction:** Since $m_0$ and $v_0$ are initialized to $0$, they are biased toward zero, especially during early steps. Adam corrects this using:
+  $$\hat{m}_t = \frac{m_t}{1 - \beta_1^t}, \quad \hat{v}_t = \frac{v_t}{1 - \beta_2^t}$$
+- **Parameters $\beta_1$ and $\beta_2$:**
+  - $\beta_1$ controls the decay rate of the first moment (momentum). The standard default is $0.9$.
+  - $\beta_2$ controls the decay rate of the second moment (RMSprop). The standard default is $0.999$, meaning squared gradients are averaged over a much longer window.
 
 ### Q11: What is the difference between Adam and AdamW?
-*(To be filled after Phase 6)*
+
+- **The Problem in Adam:** Standard L2 regularization adds a penalty term $\frac{1}{2} \lambda w^2$ to the loss function. In standard SGD, this is equivalent to subtracting a fraction of the weight at each step (weight decay). However, in Adam, the weight penalty term goes through the adaptive second moment term ($v_t$). As a result, weights with small gradients receive a *larger* weight decay rate, whereas weights with large gradients receive a *smaller* weight decay rate. This distorts the regularization effect.
+- **The AdamW Solution:** AdamW decouples weight decay from the gradient update calculations. Instead of adding the L2 penalty to the loss function and passing it through the optimizer updates, AdamW performs standard adaptive optimization on the primary loss gradients and then directly subtracts the weight decay step at the end of the update:
+  $$w_t = w_{t-1} - \eta \left( \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon} + \lambda w_{t-1} \right)$$
+  This restores the true mathematical weight decay behavior, leading to better generalization and optimization, particularly in deep models like transformers.
 
 ### Q12: Why does SGD with momentum sometimes generalize better than Adam?
-*(To be filled after Phase 6)*
+
+While Adam converges faster due to adaptive per-parameter learning rates, SGD with momentum often reaches a flatter, more generalizable minimum for three main reasons:
+1. **Adaptive Learning Rate Scaling:** Adam scales down the step size for features with large gradients and scales up for those with small gradients. This can lead to the model over-indexing on noisy features with sparse gradients, getting stuck in sharp local minima that do not generalize well.
+2. **Flat vs. Sharp Minima:** SGD with momentum uses a uniform learning rate across all parameters. Its updates are more uniform, which allows it to skip past sharp, narrow valleys (overfit regions) and settle into wider, flatter basins in the loss landscape. Flat minima are more robust to small data shifts between train and test sets.
+3. **Regularization Interaction:** Adaptive learning rates interact unpredictably with weight decay (which is fixed in AdamW but was historically broken in Adam), leading to suboptimal optimization of regularization constraints.
 
 ### Q13: What is gradient descent? Explain batch vs mini-batch vs stochastic.
-*(To be filled after Phase 6)*
+
+Gradient descent is an iterative optimization algorithm used to minimize a loss function by updating the model parameters in the opposite direction of the gradient of the loss function with respect to those parameters.
+- **Batch Gradient Descent:** Computes the gradient of the loss function over the *entire* training dataset before performing a single parameter update.
+  - *Pros:* Stable updates, guaranteed to converge to the global minimum for convex functions.
+  - *Cons:* Extremely slow and memory-intensive; cannot fit massive datasets into RAM.
+- **Stochastic Gradient Descent (SGD):** Computes the gradient and updates parameters for each *individual* training sample.
+  - *Pros:* Fast; requires very little memory; the noisy updates help escape local minima.
+  - *Cons:* Extremely high variance in updates; the loss curve oscillates heavily and may never settle.
+- **Mini-Batch Gradient Descent:** Computes the gradient and updates parameters on small, fixed-size chunks of data (mini-batches, e.g., 32, 64, 128, 256 samples).
+  - *Pros:* Combines the stability of batch gradient descent with the speed and memory efficiency of SGD; utilizes vectorization speedups on GPUs. This is the standard in deep learning.
 
 ---
 
 ## 🎲 WEIGHT INITIALIZATION
 
 ### Q14: Why is weight initialization important? What happens if all weights are initialized to zero?
-*(To be filled after Phase 7)*
+
+- **Importance:** Proper weight initialization prevents signals from exploding (becoming infinitely large) or vanishing (shrinking to zero) as they pass forward and backward through the network layers.
+- **If Weights are Zero:** If all weights are initialized to exactly zero:
+  1. **Symmetry Problem:** All hidden units in the same layer will compute the exact same output:
+     $$a_i = \text{activation}(0 \cdot x + b)$$
+  2. **Gradient Symmetry:** During backpropagation, all neurons in a layer will receive the exact same gradient update.
+  3. **No Representation Learning:** Because all hidden units update identically, they remain identical. The network behaves as if it only has a single neuron per layer, completely destroying the capacity of deep networks to learn diverse representations. Weights must be initialized randomly to **break symmetry**.
 
 ### Q15: Explain Xavier and He initialization. When do you use each?
-*(To be filled after Phase 7)*
+
+Weight initialization methods scale the variance of random weights to maintain a constant variance of activations and gradients across all layers.
+- **Xavier (Glorot) Initialization:**
+  Initializes weights from a distribution with variance:
+  $$\text{Var}(W) = \frac{2}{N_{\text{in}} + N_{\text{out}}}$$
+  Where $N_{\text{in}}$ and $N_{\text{out}}$ are the number of input and output units of the layer.
+  - *Use Case:* Best suited for layers using symmetric, linear, or saturating activation functions (like Linear, Tanh, Sigmoid). It assumes a linear activation function to keep variance stable.
+- **He (Kaiming) Initialization:**
+  Initializes weights from a distribution with variance:
+  $$\text{Var}(W) = \frac{2}{N_{\text{in}}}$$
+  - *Use Case:* Best suited for layers using asymmetric, rectified activations (like ReLU, Leaky ReLU, GELU). Because ReLU zero-out half of the activations on average, He initialization doubles the variance scale to compensate for the lost signal variance.
 
 ---
 
 ## 🛡️ TRAINING STABILITY
 
 ### Q16: What does Batch Normalization do? Why does it help training?
-*(To be filled after Phase 8)*
+
+- **What it does:** For each mini-batch during training, Batch Normalization normalizes the activation inputs of a layer to have a mean of $0$ and variance of $1$:
+  $$\hat{z} = \frac{z - \mu_B}{\sqrt{\sigma_B^2 + \epsilon}}$$
+  It then scales and shifts the normalized activation using two learnable parameters ($\gamma$ and $\beta$):
+  $$z_{\text{norm}} = \gamma \hat{z} + \beta$$
+  During evaluation, it uses running averages of mean and variance computed during training.
+- **Why it helps:**
+  1. **Reduces Internal Covariate Shift:** Keeps the distribution of inputs to later layers stable as early layers update.
+  2. **Stabilizes Gradients:** Prevents vanishing or exploding activations, allowing the use of higher learning rates and accelerating training.
+  3. **Acts as Weak Regularization:** Since mean and variance are estimated per mini-batch, they add a small amount of random noise to activations, which helps prevent overfitting.
 
 ### Q17: What is gradient clipping and when is it necessary?
-*(To be filled after Phase 8)*
+
+- **Definition:** Gradient clipping is a technique that scales down the gradients of a network if their L2 norm exceeds a specified threshold during backpropagation.
+  If the L2 norm of the gradient vector $\|g\|_2 > \text{threshold}$, the gradient is rescaled:
+  $$g \leftarrow g \cdot \frac{\text{threshold}}{\|g\|_2}$$
+- **When it is necessary:** Essential for preventing **exploding gradients**, which occur when gradients grow exponentially during backpropagation in deep networks or recurrent neural networks (RNNs). Exploding gradients cause weight updates to become massive, resulting in `NaN` values and destabilizing training.
 
 ---
 
 ## 🔒 REGULARIZATION
 
 ### Q18: What is the difference between L1 and L2 regularization? Which produces sparse weights?
-*(To be filled after Phase 8)*
+
+L1 and L2 regularization add a penalty term to the loss function to restrict weight magnitudes and prevent overfitting.
+- **L1 Regularization (Lasso):** Adds a penalty proportional to the sum of absolute values of the weights:
+  $$\Omega(W) = \lambda \|W\|_1 = \lambda \sum |w|$$
+  - *Sparsity:* **L1 produces sparse weights.** The derivative of the absolute value is constant ($\pm \lambda$), which forces weights to go exactly to $0.0$. This makes L1 useful for feature selection.
+- **L2 Regularization (Ridge / Weight Decay):** Adds a penalty proportional to the sum of squared weights:
+  $$\Omega(W) = \frac{1}{2} \lambda \|W\|_2^2 = \frac{1}{2} \lambda \sum w^2$$
+  - *Behavior:* The derivative is proportional to the weight magnitude ($w$). Large weights are heavily penalized, but as a weight approaches $0.0$, the penalty shrinks, meaning weights are driven close to zero but rarely become exactly $0.0$. It keeps weights small and distributed.
 
 ### Q19: How does Dropout regularize a neural network? What is the intuition?
-*(To be filled after Phase 8)*
+
+- **Mechanism:** During each training forward pass, Dropout randomly zeroes out a fraction $p$ (e.g., 30% or 50%) of the activation outputs of a layer. During evaluation, Dropout is disabled, and activation outputs are scaled by $(1 - p)$ to match the expected scale during training.
+- **Intuition:**
+  1. **Prevents Co-adaptation:** A neuron cannot rely on the presence of specific other neurons to make decisions. It forces each neuron to learn useful features independently.
+  2. **Ensemble Approximation:** Zeroing out neurons randomly creates a different network architecture for every forward pass. Training with dropout is equivalent to training an ensemble of $2^N$ sub-networks with shared weights, which significantly reduces overfitting.
 
 ### Q20: What is the difference between weight decay and L2 regularization in the context of Adam optimizer?
-*(To be filled after Phase 8)*
+
+- **L2 Regularization:** Adds a penalty to the loss function. When using optimizers like Adam, the gradient of the L2 penalty is added to the loss gradient and then divided by the running second moment average ($\sqrt{v_t}$). This scales the weight decay rate inversely with the gradient scale, which means weights with small gradients get regularized more than weights with large gradients.
+- **Weight Decay:** Directly subtracts a fraction of the weight at the end of the update step, bypassing the adaptive step calculations entirely:
+  $$w_t = w_{t-1} - \eta \cdot \text{update} - \eta \lambda w_{t-1}$$
+- **Adam Context:** In standard Adam, L2 regularization and weight decay are **not** equivalent due to adaptive division. Using L2 regularization in Adam yields poor results. AdamW fixes this by implementing actual weight decay, which decouples the regularization step from gradient updates.
 
 ---
 

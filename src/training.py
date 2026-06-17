@@ -269,3 +269,122 @@ def compute_class_weights(y: pd.Series) -> float:
     if pos_count == 0:
         return 1.0
     return float(neg_count) / pos_count
+
+def run_experiment(
+    exp_name: str,
+    model: nn.Module,
+    train_loader: DataLoader,
+    val_loader: DataLoader,
+    test_loader: DataLoader,
+    device: torch.device,
+    criterion: nn.Module = None,
+    opt_name: str = "adamw",
+    lr: float = 0.001,
+    weight_decay: float = 0.0,
+    momentum: float = 0.9,
+    nesterov: bool = False,
+    scheduler_name: str = None,
+    scheduler_params: dict = None,
+    epochs: int = 50,
+    patience: int = 5,
+    l1_lambda: float = 0.0,
+    max_grad_norm: float = None,
+    checkpoint_prefix: str = "optimizer"
+) -> dict:
+    """
+    Unified training-evaluation wrapper to run modeling experiments.
+    Saves best model checkpoints and logs metrics automatically.
+    """
+    from src.evaluation import evaluate_model
+    from src.utils import log_experiment
+    import numpy as np
+
+    # 1. Loss function
+    if criterion is None:
+        criterion = nn.BCEWithLogitsLoss()
+        
+    # 2. Optimizer
+    optimizer = get_optimizer(
+        model, opt_name=opt_name, lr=lr, weight_decay=weight_decay,
+        momentum=momentum, nesterov=nesterov
+    )
+    
+    # 3. Scheduler
+    scheduler = None
+    if scheduler_name:
+        params = scheduler_params or {}
+        scheduler = get_scheduler(optimizer, scheduler_name=scheduler_name, **params)
+        
+    # 4. Checkpoint path
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    checkpoint_dir = os.path.join(project_root, "outputs", "models")
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    checkpoint_path = os.path.join(checkpoint_dir, f"{checkpoint_prefix}_{exp_name}_best_model.pt")
+    
+    # 5. Early stopping callback
+    if patience is not None and patience > 0:
+        early_stopping = EarlyStopping(patience=patience, checkpoint_path=checkpoint_path)
+    else:
+        early_stopping = None
+    
+    # 6. Trainer instantiation and training
+    trainer = Trainer(
+        model=model,
+        criterion=criterion,
+        optimizer=optimizer,
+        device=device,
+        scheduler=scheduler,
+        early_stopping=early_stopping,
+        max_grad_norm=max_grad_norm,
+        l1_lambda=l1_lambda
+    )
+    
+    print(f"\n==================================================")
+    print(f"RUNNING EXPERIMENT: {exp_name.upper()}")
+    print(f"==================================================")
+    
+    history = trainer.fit(train_loader, val_loader, epochs=epochs)
+    
+    # Load best checkpoint weights or save final epoch weights
+    if early_stopping is not None:
+        model.load_state_dict(torch.load(checkpoint_path, map_location=device))
+    else:
+        torch.save(model.state_dict(), checkpoint_path)
+    
+    # Evaluate model on splits
+    train_metrics = evaluate_model(model, train_loader, device, criterion=criterion)
+    val_metrics = evaluate_model(model, val_loader, device, criterion=criterion)
+    test_metrics = evaluate_model(model, test_loader, device, criterion=criterion)
+    
+    # 7. Log configurations and metrics
+    config = {
+        "opt_name": opt_name,
+        "lr": lr,
+        "weight_decay": weight_decay,
+        "scheduler_name": scheduler_name or "none",
+        "l1_lambda": l1_lambda,
+        "max_grad_norm": max_grad_norm or 0.0,
+        "checkpoint_path": checkpoint_path
+    }
+    
+    # Flatten metrics to dictionary of floats for logging
+    logged_metrics = {}
+    for prefix, split_metrics in [("train", train_metrics), ("val", val_metrics), ("test", test_metrics)]:
+        for k, v in split_metrics.items():
+            if isinstance(v, (int, float, np.float32, np.float64, np.int64)):
+                logged_metrics[f"{prefix}_{k}"] = float(v)
+            elif isinstance(v, dict):
+                for sub_k, sub_v in v.items():
+                    if isinstance(sub_v, (int, float, np.float32, np.float64, np.int64)):
+                        logged_metrics[f"{prefix}_{k}_{sub_k}"] = float(sub_v)
+                        
+    log_experiment(exp_name, config, logged_metrics)
+    
+    return {
+        "history": history,
+        "train": train_metrics,
+        "val": val_metrics,
+        "test": test_metrics,
+        "epochs_run": len(history["train_loss"])
+    }
+

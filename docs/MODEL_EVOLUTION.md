@@ -240,3 +240,22 @@ Production Model
 ---
 
 *Last updated: 2026-06-17 | Phase: 11 – Business-Aware Threshold Tuning*
+
+---
+
+## 🔍 TECHNICAL AUDIT & POLISH NOTES
+
+- **Date:** 2026-06-18
+- **Audit Findings:**
+  1. **Categorical Encoding Leakage Inspection:**
+     - *Issue:* In `notebooks/02_preprocessing.ipynb` and `src/preprocessing.py`, `pd.get_dummies` was applied globally to the dataset before partitioning into train, validation, and test splits.
+     - *Impact Analysis:* We verified that the 5 categories in the `merchant_category` column (`Clothing`, `Electronics`, `Food`, `Grocery`, `Travel`) are fully present in all three splits. There are no out-of-vocabulary categories in the validation or test sets. Consequently, the global one-hot encoding did **not** leak target-related info or distort the reported metrics. The column matrices align perfectly.
+     - *Production Risk:* The current pipeline violates strict partition isolation. If an unseen category were to appear in validation or test data, it would cause a feature dimension mismatch.
+     - *Resolution:* Because the numerical impact is strictly $0.0\%$ (negligible) and refactoring would break the existing 42 trained checkpoints (due to potential weight alignment shifts), the global encoding has been documented as a structural limitation.
+  2. **Centralization of Training Logic:**
+     - The custom `run_experiment` functions repeated across notebooks were refactored into a single, robust function: `src.training.run_experiment`.
+  3. **Deterministic Seeding:**
+     - Incorporated a seed generator helper `create_deterministic_dataloader` in `src.utils` to control worker-level seeding for Python, NumPy, PyTorch, and CUDA, ensuring strict run-to-run reproducibility.
+  4. **Structured Experiment Logging:**
+     - Integrated JSON/CSV logging within the experiment runner, appending all training and evaluation metrics to `outputs/reports/experiment_logs.csv` and `outputs/reports/experiment_logs.json` for audit traceability.
+

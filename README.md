@@ -107,33 +107,33 @@ credit-card-fraud-detection-system/
 | Phase | Topic | Notebook | Status |
 |---|---|---|---|
 | 1 | Planning, Dataset Inspection, Documentation | — | ✅ Complete |
-| 2 | Exploratory Data Analysis | 01_eda | ⬜ |
-| 3 | Preprocessing + Feature Engineering | 02_preprocessing | ⬜ |
-| 4 | NN Foundations + Baseline MLP | 03_baseline_mlp | ⬜ |
-| 5 | Activation Function Study | 04_activation_study | ⬜ |
-| 6 | Optimizer Study | 05_optimizer_study | ⬜ |
-| 7 | Initialization Study | 06_initialization_study | ⬜ |
-| 8 | Regularization Study | 07_regularization_study | ⬜ |
-| 9 | Class Imbalance Study | 08_class_imbalance_study | ⬜ |
-| 10 | Advanced Architecture | 09_advanced_model | ⬜ |
-| 11 | Threshold Optimization | 10_threshold_optimization | ⬜ |
-| 12 | Final Report | 11_final_report | ⬜ |
+| 2 | Exploratory Data Analysis | 01_eda | ✅ Complete |
+| 3 | Preprocessing + Feature Engineering | 02_preprocessing | ✅ Complete |
+| 4 | NN Foundations + Baseline MLP | 03_baseline_mlp | ✅ Complete |
+| 5 | Activation Function Study | 04_activation_study | ✅ Complete |
+| 6 | Optimizer Study | 05_optimizer_study | ✅ Complete |
+| 7 | Initialization Study | 06_initialization_study | ✅ Complete |
+| 8 | Regularization Study | 07_regularization_study | ✅ Complete |
+| 9 | Class Imbalance Study | 08_class_imbalance_study | ✅ Complete |
+| 10 | Advanced Architecture | 09_advanced_model | ✅ Complete |
+| 11 | Threshold Optimization | 10_threshold_optimization | ✅ Complete |
+| 12 | Final Report | 11_final_report | ✅ Complete |
 
 ---
 
 ## Key Results
 
-> *(To be filled as experiments complete)*
+Evaluation results of model progression on the holdout test set (under default threshold $T = 0.500$):
 
-| Model Version | Recall | Precision | F1 | PR-AUC | ROC-AUC |
+| Model Version | Recall | Precision | F1-Score | PR-AUC | ROC-AUC |
 |---|---|---|---|---|---|
-| Baseline MLP | — | — | — | — | — |
-| + Best Activation | — | — | — | — | — |
-| + Best Optimizer | — | — | — | — | — |
-| + Best Init | — | — | — | — | — |
-| + Regularization | — | — | — | — | — |
-| + Class Imbalance | — | — | — | — | — |
-| Final (Threshold-Opt) | — | — | — | — | — |
+| **Baseline MLP** (Phase 4) | 73.9% | 81.0% | 77.3% | 0.8422 | 0.9964 |
+| **+ Best Activation** (Leaky ReLU) | 73.9% | 70.8% | 72.3% | 0.8338 | 0.9962 |
+| **+ Best Optimizer** (AdamW + Warmup Cosine) | 69.6% | 72.7% | 71.1% | 0.7936 | 0.9954 |
+| **+ Best Init** (Random Normal) | 69.6% | 84.2% | 76.2% | 0.8655 | 0.9975 |
+| **+ Regularization** (Early Stopping / Grad Clip) | 73.9% | 85.0% | 79.1% | 0.8370 | 0.9968 |
+| **+ Class Imbalance** (WeightedRandomSampler) | 95.7% | 44.9% | 61.1% | 0.8580 | 0.9967 |
+| **Final (Threshold-Opt)** (MLP w/ Sampler, T=0.500) | 95.7% | 38.6% | 55.0% | 0.8273 | 0.9960 |
 
 ---
 
@@ -173,11 +173,14 @@ jupyter>=1.0.0
 ## Documentation
 
 All documentation lives in `docs/`. Start with:
+- [**`FINAL_REPORT.md`**](docs/FINAL_REPORT.md) — Summary portfolio presentation of final results and system design
+- [**`FINAL_AUDIT_REPORT.md`**](docs/FINAL_AUDIT_REPORT.md) — Comprehensive engineering, scientific, and portfolio audit
 - [`PROJECT_MASTER.md`](docs/PROJECT_MASTER.md) — Project overview and decisions
 - [`LEARNING_CHECKLIST.md`](docs/LEARNING_CHECKLIST.md) — Topic completion tracker
 - [`EXPERIMENT_TRACKER.md`](docs/EXPERIMENT_TRACKER.md) — All experiment results
 - [`BUSINESS_IMPACT.md`](docs/BUSINESS_IMPACT.md) — Business context and cost analysis
 - [`INTERVIEW_NOTES.md`](docs/INTERVIEW_NOTES.md) — Deep learning Q&A for interviews
+- [`MODEL_EVOLUTION.md`](docs/MODEL_EVOLUTION.md) — Detailed model evolution history
 
 ---
 
