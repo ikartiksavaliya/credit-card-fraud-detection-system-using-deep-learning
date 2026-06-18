@@ -1,11 +1,72 @@
-torch>=2.0.0
-numpy>=1.24.0
-pandas>=2.0.0
-scikit-learn>=1.3.0
-imbalanced-learn>=0.11.0
-matplotlib>=3.7.0
-seaborn>=0.12.0
-jupyter>=1.0.0
-notebook>=7.0.0
-ipykernel>=6.0.0
-tqdm>=4.65.0
+# ============================================================================
+# Credit Card Fraud Detection System - Requirements
+# ============================================================================
+# Core Deep Learning & Numerical Computing
+torch>=2.0.0              # PyTorch: Deep learning framework
+numpy>=1.24.0             # NumPy: Numerical computing
+pandas>=2.0.0             # Pandas: Data manipulation and analysis
+scipy>=1.10.0             # SciPy: Scientific computing utilities
+
+# Machine Learning & Data Preprocessing
+scikit-learn>=1.3.0       # Scikit-learn: Classical ML algorithms & preprocessing
+imbalanced-learn>=0.11.0  # Imbalanced-learn: SMOTE & class imbalance handling
+
+# Data Visualization
+matplotlib>=3.7.0         # Matplotlib: 2D plotting library
+seaborn>=0.12.0           # Seaborn: Statistical data visualization
+
+# Jupyter & Interactive Development
+jupyter>=1.0.0            # Jupyter: Interactive computing environment
+notebook>=7.0.0           # Notebook: Jupyter web interface
+ipykernel>=6.0.0          # IPython kernel for Jupyter
+ipywidgets>=8.0.0         # Interactive widgets for Jupyter
+
+# Utilities
+tqdm>=4.65.0              # tqdm: Progress bars for loops
+python-dotenv>=1.0.0      # Python-dotenv: Environment variable management
+joblib>=1.3.0             # Joblib: Parallel computing
+
+# ============================================================================
+# Optional Dependencies
+# ============================================================================
+# For Model Export & Deployment
+onnx>=1.14.0              # ONNX: Open Neural Network Exchange format
+onnxruntime>=1.15.0       # ONNX Runtime: ONNX model inference
+
+# For Advanced Visualization & Reporting
+plotly>=5.13.0            # Plotly: Interactive visualizations
+kaleido>=0.2.1            # Kaleido: Static image export for Plotly
+
+# For Experiment Tracking
+wandb>=0.13.0             # Weights & Biases: ML experiment tracking
+mlflow>=2.0.0             # MLflow: ML lifecycle management
+
+# For Advanced Statistics
+statsmodels>=0.14.0       # Statsmodels: Statistical modeling
+
+# For Code Quality & Documentation
+black>=23.0.0             # Black: Code formatter
+flake8>=6.0.0             # Flake8: Code linter
+pytest>=7.0.0             # Pytest: Testing framework
+sphinx>=7.0.0             # Sphinx: Documentation generator
+
+# ============================================================================
+# Installation Notes:
+# ============================================================================
+# Basic Installation (Required only):
+#   pip install -r requirements.txt
+#
+# Full Installation (with optional dependencies):
+#   pip install -r requirements.txt[full]
+#   OR
+#   pip install -r requirements.txt && pip install wandb mlflow plotly onnx
+#
+# Development Setup:
+#   pip install -r requirements.txt black flake8 pytest
+#
+# GPU Support (CUDA 11.8):
+#   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+#
+# CPU Only (for systems without NVIDIA GPU):
+#   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+# ============================================================================
